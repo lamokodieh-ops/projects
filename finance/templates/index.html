@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <div>
+        <h2>Portfolio</h2>
+    </div>
+    <div class="container mt-5">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Stock Symbol</th>
+                    <th scope="col">Shares Owned</th>
+                    <th scope="col">Stock Price</th>
+                    <th scope="col">Stock Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in portfolio %}
+                    <tr>
+                        <td>{{p.symbol}}</td>
+                        <td>{{p.shares}}</td>
+                        <td>{{p.price | usd}}</td>
+                        <td>{{p.stock_value | usd}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="container mt-5">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Cash Balance</th>
+                    <th scope="col">Stocks' Total Value</th>
+                    <th scope="col">Total Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{cash_balance | usd}}</td>
+                    <td>{{total_stock_value | usd}}</td>
+                    <td>{{total_balance | usd}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
