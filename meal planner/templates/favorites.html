@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+
+{% block title %}Favorites - Meal Planner{% endblock %}
+
+{% block content %}
+<div class="favorites-header">
+    <h2>❤️ Your Favorite Meals</h2>
+    <p>Quick access to the meals you love</p>
+</div>
+
+{% if meals %}
+<div class="favorites-grid">
+    {% for meal in meals %}
+    <div class="favorite-card">
+        <div class="favorite-header">
+            <h3>{{ meal['meal_name'] }}</h3>
+            <span class="meal-type-badge">{{ meal['meal_type']|title }}</span>
+        </div>
+        {% if meal['description'] %}
+        <p class="favorite-description">{{ meal['description'] }}</p>
+        {% endif %}
+        <div class="favorite-meta">
+            {% if meal['rating'] %}
+            <div class="rating-display">
+                {% for i in range(5) %}
+                    {% if i < meal['rating'] %}
+                    <span class="star filled">★</span>
+                    {% else %}
+                    <span class="star">☆</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            <span class="last-eaten">Last: {{ meal['meal_date'] }}</span>
+        </div>
+        {% if meal['feedback'] %}
+        <div class="favorite-feedback">
+            <strong>Your notes:</strong> {{ meal['feedback'] }}
+        </div>
+        {% endif %}
+        <div class="favorite-actions">
+            <a href="{{ url_for('add_meal', meal_name=meal['meal_name'], meal_type=meal['meal_type']) }}" class="btn btn-primary btn-sm">
+                Add Again
+            </a>
+            <a href="{{ url_for('edit_meal', meal_id=meal['id']) }}" class="btn btn-secondary btn-sm">
+                Edit
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">❤️</div>
+    <h3>No favorites yet</h3>
+    <p>Mark meals as favorites by clicking the heart icon on any meal!</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+</div>
+{% endif %}
+{% endblock %}
+

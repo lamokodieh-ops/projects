@@ -1,0 +1,134 @@
+{% extends "index.html" %}
+
+{% block title %}Statistics - Meal Planner{% endblock %}
+
+{% block content %}
+<div class="statistics-header">
+    <h2>📊 Your Eating Habits</h2>
+    <p>Insights and analytics from your meal history</p>
+</div>
+
+<div class="stats-overview">
+    <div class="stat-card">
+        <div class="stat-icon">🍽️</div>
+        <div class="stat-value">{{ total_meals }}</div>
+        <div class="stat-label">Total Meals</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⭐</div>
+        <div class="stat-value">{{ avg_rating }}</div>
+        <div class="stat-label">Avg Rating</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">❤️</div>
+        <div class="stat-value">{{ favorite_count }}</div>
+        <div class="stat-label">Favorites</div>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stats-section">
+        <h3>🥘 Meals by Type</h3>
+        <div class="chart-container">
+            {% if meals_by_type %}
+            <div class="horizontal-bars">
+                {% for meal in meals_by_type %}
+                <div class="bar-item">
+                    <div class="bar-label">{{ meal['meal_type']|title }}</div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="width: {{ (meal['count'] / total_meals * 100)|round }}%;">
+                            <span class="bar-value">{{ meal['count'] }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">No data yet. Start logging meals!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h3>📅 Meals by Day of Week</h3>
+        <div class="chart-container">
+            {% if meals_by_day %}
+            <div class="horizontal-bars">
+                {% for day in meals_by_day %}
+                <div class="bar-item">
+                    <div class="bar-label">{{ day['day_name'][:3] }}</div>
+                    <div class="bar-wrapper">
+                        <div class="bar bar-secondary" style="width: {{ (day['count'] / total_meals * 100)|round }}%;">
+                            <span class="bar-value">{{ day['count'] }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="no-data">No data yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h3>⭐ Top Rated Meals</h3>
+        <div class="list-container">
+            {% if top_rated %}
+            <ol class="ranked-list">
+                {% for meal in top_rated %}
+                <li>
+                    <span class="meal-name">{{ meal['meal_name'] }}</span>
+                    <span class="meal-rating">
+                        {% for i in range(meal['rating']|int) %}★{% endfor %}
+                        <span class="times-eaten">({{ meal['times_eaten'] }}x)</span>
+                    </span>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="no-data">Rate some meals to see your top picks!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="stats-section">
+        <h3>🔄 Most Frequent Meals</h3>
+        <div class="list-container">
+            {% if most_frequent %}
+            <ol class="ranked-list">
+                {% for meal in most_frequent %}
+                <li>
+                    <span class="meal-name">{{ meal['meal_name'] }}</span>
+                    <span class="meal-count">
+                        {{ meal['count'] }} times
+                        {% if meal['avg_rating'] %}
+                        <span class="avg-rating">({{ "%.1f"|format(meal['avg_rating']) }}★)</span>
+                        {% endif %}
+                    </span>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="no-data">Start logging meals to see patterns!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if recent_activity %}
+<div class="stats-section full-width">
+    <h3>📈 Recent Activity (Last 30 Days)</h3>
+    <div class="activity-heatmap">
+        {% for day in recent_activity %}
+        <div class="activity-day" title="{{ day['date'] }}: {{ day['count'] }} meals">
+            <div class="activity-bar" style="height: {{ day['count'] * 20 }}px;"></div>
+            <span class="activity-label">{{ day['count'] }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
