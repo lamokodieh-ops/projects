@@ -1,0 +1,77 @@
+{% extends "index.html" %}
+
+{% block title %}Notifications - Meal Planner{% endblock %}
+
+{% block content %}
+<div class="notifications-header">
+    <h2>🔔 Notifications</h2>
+    {% if notifications %}
+    <div class="notifications-header-actions">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="toggleSelectAll()">
+            <span id="selectAllText">Select All</span>
+        </button>
+        <form method="POST" action="{{ url_for('clear_notifications') }}" class="clear-form">
+            <button type="submit" class="btn btn-secondary btn-sm">Clear All</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Selection bar for multi-delete -->
+<div id="notificationSelectionBar" class="selection-bar notification-selection-bar" style="display: none;">
+    <div class="selection-info">
+        <span id="notificationSelectionCount">0</span> notification(s) selected
+    </div>
+    <div class="selection-actions">
+        <button type="button" class="btn btn-sm btn-secondary" onclick="clearNotificationSelection()">Cancel</button>
+        <button type="button" class="btn btn-sm btn-delete" onclick="deleteSelectedNotifications()">🗑️ Delete Selected</button>
+    </div>
+</div>
+
+{% if notifications %}
+<div class="notifications-list">
+    {% for notification in notifications %}
+    <div class="notification-item {% if not notification['is_read'] %}unread{% endif %} notification-{{ notification['notification_type'] }}"
+         data-notification-id="{{ notification['id'] }}">
+        <label class="notification-checkbox">
+            <input type="checkbox" 
+                   class="notification-select-checkbox"
+                   data-notification-id="{{ notification['id'] }}">
+        </label>
+        <div class="notification-icon">
+            {% if notification['notification_type'] == 'huds_favorite' %}
+            🍽️
+            {% elif notification['notification_type'] == 'reminder' %}
+            ⏰
+            {% elif notification['notification_type'] == 'achievement' %}
+            🏆
+            {% else %}
+            ℹ️
+            {% endif %}
+        </div>
+        <div class="notification-content">
+            <p class="notification-message">{{ notification['message'] }}</p>
+            <span class="notification-time">{{ notification['created_at'] }}</span>
+        </div>
+        <div class="notification-actions">
+            {% if not notification['is_read'] %}
+            <span class="unread-indicator"></span>
+            {% endif %}
+            <button class="notification-delete-btn" 
+                    data-notification-id="{{ notification['id'] }}"
+                    title="Delete notification">
+                ✕
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">🔔</div>
+    <h3>No notifications</h3>
+    <p>You're all caught up! Notifications will appear here when your favorite HUDS items are available.</p>
+    <a href="{{ url_for('huds_menu') }}" class="btn btn-primary" style="color: white !important;">Browse HUDS Menu</a>
+</div>
+{% endif %}
+{% endblock %}

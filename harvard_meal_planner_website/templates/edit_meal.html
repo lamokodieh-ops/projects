@@ -1,0 +1,66 @@
+{% extends "index.html" %}
+
+{% block title %}Edit Meal - Meal Planner{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>Edit Meal</h2>
+        <form method="POST" action="{{ url_for('edit_meal', meal_id=meal['id']) }}">
+            <div class="form-group">
+                <label for="meal_type">Meal Type *</label>
+                <select id="meal_type" name="meal_type" required>
+                    <option value="">Select meal type</option>
+                    {% for meal_type in meal_types %}
+                    <option value="{{ meal_type }}" {% if meal['meal_type'] == meal_type %}selected{% endif %}>
+                        {{ meal_type|title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="meal_name">Meal Name *</label>
+                <input type="text" id="meal_name" name="meal_name" value="{{ meal['meal_name'] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="meal_date">Date *</label>
+                <input type="date" id="meal_date" name="meal_date" value="{{ meal['meal_date'] }}" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description (Optional)</label>
+                <textarea id="description" name="description" rows="3">{{ meal['description'] or '' }}</textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="rating">Rating</label>
+                    <div class="star-rating-input" id="ratingInput">
+                        <input type="hidden" name="rating" id="rating" value="{{ meal['rating'] or 0 }}">
+                        {% for i in range(1, 6) %}
+                        <span class="star-input {% if i <= (meal['rating'] or 0) %}filled{% endif %}" data-value="{{ i }}">
+                            {% if i <= (meal['rating'] or 0) %}★{% else %}☆{% endif %}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group half">
+                    <label class="checkbox-label inline">
+                        <input type="checkbox" name="is_favorite" {% if meal['is_favorite'] %}checked{% endif %}>
+                        <span class="checkbox-text">❤️ Favorite</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="feedback">Feedback / Notes</label>
+                <textarea id="feedback" name="feedback" rows="3" placeholder="How was this meal? Any thoughts for next time?">{{ meal['feedback'] or '' }}</textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Meal</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
