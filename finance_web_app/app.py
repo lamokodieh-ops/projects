@@ -1,5 +1,12 @@
 import os
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
@@ -71,6 +78,16 @@ def index():
 
         # Find current value of shares owned
         quote = lookup(symbol)
+        if quote is None:
+            # Skip live pricing if the quote API is unavailable / rate-limited
+            portfolio.append({
+                "symbol": symbol,
+                "shares": shares_owned,
+                "price": 0,
+                "stock_value": 0
+            })
+            continue
+
         current_price = quote["price"]
         stock_value = shares_owned * current_price
 

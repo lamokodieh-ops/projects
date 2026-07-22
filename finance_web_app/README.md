@@ -15,15 +15,31 @@ python -m venv .venv
 # source .venv/bin/activate
 
 pip install -r requirements.txt
+copy .env.example .env   # Windows — then add your Alpha Vantage key
+# cp .env.example .env   # macOS / Linux
 flask --app app.py run
 ```
 
 Open **http://127.0.0.1:5000** and register a new account (or use the existing SQLite DB if present).
 
+## Stock quotes (Alpha Vantage)
+
+Quotes use [Alpha Vantage](https://www.alphavantage.co/) when `ALPHA_VANTAGE_API_KEY` is set in `.env`.
+
+```env
+ALPHA_VANTAGE_API_KEY=your-key-here
+SECRET_KEY=any-long-random-string
+```
+
+If the key is missing, the app falls back to the CS50 quote API.
+
+**Free-tier note:** Alpha Vantage rate-limits requests (often a few per minute / day on free keys). If quotes fail intermittently, wait a minute and try again.
+
 ## Requirements
 
 - Python 3.9+
-- Internet access for stock quotes (`finance.cs50.io`)
+- Internet access for stock quotes
+- Alpha Vantage API key (recommended)
 
 ## Deploy for display (Render)
 
@@ -38,6 +54,7 @@ This app needs a Python host (not GitHub Pages).
    - **Start Command:** `gunicorn app:app`
 5. Environment variables:
    - `SECRET_KEY` — any long random string
+   - `ALPHA_VANTAGE_API_KEY` — your Alpha Vantage key
    - `FLASK_ENV` — `production` (optional)
 
 Alternatively use the included [`render.yaml`](./render.yaml) Blueprint.
@@ -58,6 +75,7 @@ finance_web_app/
 
 ## Notes
 
-- Quotes come from the public CS50 finance API — the app will not quote stocks offline.
+- Quotes prefer Alpha Vantage (`GLOBAL_QUOTE` + `SYMBOL_SEARCH`); CS50 is used only if no key is set.
+- Never commit `.env` — it is gitignored. Use `.env.example` as a template.
 - `flask_session/` is runtime state and is gitignored.
 - For a portfolio showcase without hosting, record a short Loom of login → quote → buy → portfolio.
