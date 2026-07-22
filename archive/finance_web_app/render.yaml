@@ -2,7 +2,7 @@ services:
   - type: web
     name: zen-finance
     runtime: python
-    rootDir: finance_web_app
+    rootDir: archive/finance_web_app
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
     envVars:

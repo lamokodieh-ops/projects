@@ -1,4 +1,6 @@
-# Zen Finance
+# Zen Finance *(archived / inactive)*
+
+> **Status: inactive.** This project lives under `archive/finance_web_app` and is not part of the active portfolio. Kept for reference; not maintained or deployed.
 
 CS50-style Flask stock-trading web app. Quote prices, buy/sell shares, and track a portfolio with cash balance.
 
@@ -9,14 +11,14 @@ CS50-style Flask stock-trading web app. Quote prices, buy/sell shares, and track
 Double-click `run.bat`, or in a terminal:
 
 ```bash
-cd finance_web_app
+cd archive/finance_web_app
 .\run.bat
 ```
 
 ### Manual setup
 
 ```bash
-cd finance_web_app
+cd archive/finance_web_app
 python -m venv .venv
 
 # Windows
@@ -69,7 +71,7 @@ This app needs a Python host (not GitHub Pages).
 2. Create a free [Render](https://render.com) **Web Service**.
 3. Connect `lamokodieh-ops/projects`.
 4. Settings:
-   - **Root Directory:** `finance_web_app`
+   - **Root Directory:** `archive/finance_web_app`
    - **Build Command:** `pip install -r requirements.txt`
    - **Start Command:** `gunicorn app:app`
 5. Environment variables:
@@ -82,7 +84,7 @@ Alternatively use the included [`render.yaml`](./render.yaml) Blueprint.
 ## Project layout
 
 ```
-finance_web_app/
+archive/finance_web_app/
   app.py              # routes
   helpers.py          # login_required, lookup, usd
   finance.db          # SQLite (demo data may be included)

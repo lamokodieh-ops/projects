@@ -6,8 +6,8 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 |---------|------|-------------|----------------|
 | [InLumine](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | Deploy to [Vercel](https://vercel.com) (see project README) |
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | Deploy to [Render](https://render.com) · [Video demo](https://youtu.be/gQS6CYNJGTA) |
-| [Zen Finance](./finance_web_app) | Flask stock portfolio | `pip install -r requirements.txt && flask --app app.py run` | Deploy to [Render](https://render.com) |
 | [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | See README (CLI — not a web app) |
+| [Zen Finance](./archive/finance_web_app) *(archived)* | Flask stock portfolio | Inactive — see archived README | Not deployed |
 
 ## Clone
 
@@ -31,7 +31,8 @@ Then visit: `https://lamokodieh-ops.github.io/projects/`
 
 ## Notes
 
-- Each web app has its own `README.md` with install, demo accounts (where applicable), and deploy steps.
+- Each active web app has its own `README.md` with install, demo accounts (where applicable), and deploy steps.
 - Flask apps include a `Procfile` for Render / Railway / Heroku-style hosts.
 - InLumine uses SQLite locally; use PostgreSQL for production (instructions in its README).
 - Secrets (`.env`, session files, compiled binaries) are gitignored where relevant.
+- Inactive projects live under [`archive/`](./archive). **Zen Finance** is archived there and is not part of the active portfolio.
