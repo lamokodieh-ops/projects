@@ -1,27 +1,32 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Sell Shares
-{% endblock %}
+{% block title %}Sell{% endblock %}
 
 {% block main %}
-    <div>
-        <h2>Sell Shares of Stock</h2>
-    </div>
-    <div class="container mt-5">
+<h1 class="zf-page-title">Sell shares</h1>
+<p class="zf-page-sub">Close or trim a position from your holdings.</p>
+<div class="zf-card zf-form-card">
+    {% if portfolio %}
         <form action="/sell" method="post">
             <div class="mb-3">
-                <select class="form-select mx-auto w-auto" name="symbol">
-                    <option disabled selected value>Select Stock</option>
+                <label class="form-label text-secondary small" for="symbol">Symbol</label>
+                <select class="form-select" id="symbol" name="symbol" required>
+                    <option disabled selected value="">Select stock</option>
                     {% for stock in portfolio %}
-                        <option value="{{ stock.symbol }}">{{ stock.symbol }}</option>
+                        <option value="{{ stock.symbol }}">{{ stock.symbol }} ({{ stock.shares }} owned)</option>
                     {% endfor %}
                 </select>
             </div>
-            <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="shares" placeholder="Number of Shares" min="0" type="number">
+            <div class="mb-4">
+                <label class="form-label text-secondary small" for="shares">Shares</label>
+                <input autocomplete="off" autofocus class="form-control" id="shares" min="1" name="shares" placeholder="Number of shares" type="number" required>
             </div>
-            <button class="btn btn-primary" type="submit">Sell</button>
+            <button class="btn zf-btn-primary w-100" type="submit">Sell</button>
         </form>
-    </div>
+    {% else %}
+        <div class="zf-empty mb-0">
+            <p class="mb-0">Nothing to sell yet. <a href="/buy">Buy shares</a> first.</p>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

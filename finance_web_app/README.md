@@ -40,11 +40,20 @@ Quotes use [Alpha Vantage](https://www.alphavantage.co/) when `ALPHA_VANTAGE_API
 ```env
 ALPHA_VANTAGE_API_KEY=your-key-here
 SECRET_KEY=any-long-random-string
+QUOTE_CACHE_TTL=300
 ```
 
-If the key is missing, the app falls back to the CS50 quote API.
+Lookup order: **SQLite cache (TTL)** → Alpha Vantage → CS50 fallback → stale cache.
 
-**Free-tier note:** Alpha Vantage free keys are limited (about **25 requests per day**). The app uses **one request per quote** and automatically falls back to the CS50 quote API when Alpha Vantage is rate-limited, so the app keeps working.
+**Free-tier note:** Alpha Vantage free keys are limited (about **25 requests per day**). Caching (default 5 minutes) and CS50 fallback keep the app usable.
+
+## Sprint 1 upgrades
+
+- Dark fintech UI theme (Bootstrap + custom CSS tokens)
+- Portfolio summary cards + holdings table
+- Unrealized gain/loss (avg cost basis vs live price)
+- Quote cache table `quote_cache`
+- Flash confirmations for buy / sell / deposit / login
 
 ## Requirements
 

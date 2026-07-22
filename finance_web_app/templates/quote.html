@@ -1,19 +1,17 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Get Stock Quote
-{% endblock %}
+{% block title %}Quote{% endblock %}
 
 {% block main %}
-    <div>
-        <h2>Get Quote For Stock</h2>
-    </div>
-    <div class="container mt-5">
-        <form action="/quote" method="post">
-            <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="symbol" placeholder="Stock Symbol" type="text">
-            </div>
-            <button class="btn btn-primary" type="submit">Get Quote</button>
-        </form>
-    </div>
+<h1 class="zf-page-title">Get a quote</h1>
+<p class="zf-page-sub">Live price via Alpha Vantage, with CS50 fallback and short-term cache.</p>
+<div class="zf-card zf-form-card">
+    <form action="/quote" method="post">
+        <div class="mb-4">
+            <label class="form-label text-secondary small" for="symbol">Symbol</label>
+            <input autocomplete="off" autofocus class="form-control text-uppercase" id="symbol" name="symbol" placeholder="e.g. MSFT" type="text" required>
+        </div>
+        <button class="btn zf-btn-primary w-100" type="submit">Get quote</button>
+    </form>
+</div>
 {% endblock %}

@@ -1,22 +1,21 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Buy Shares
-{% endblock %}
+{% block title %}Buy{% endblock %}
 
 {% block main %}
-    <div>
-        <h2>Buy Shares of Stock</h2>
-    </div>
-    <div class="container mt-5">
-        <form action="/buy" method="post">
-            <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="symbol" placeholder="Stock Symbol" type="text">
-            </div>
-            <div class="mb-3">
-                <input autocomplete="off" class="form-control mx-auto w-auto" name="shares" placeholder="Number of Shares" type="text">
-            </div>
-            <button class="btn btn-primary" type="submit">Buy</button>
-        </form>
-    </div>
+<h1 class="zf-page-title">Buy shares</h1>
+<p class="zf-page-sub">Purchase at the latest available quote.</p>
+<div class="zf-card zf-form-card">
+    <form action="/buy" method="post">
+        <div class="mb-3">
+            <label class="form-label text-secondary small" for="symbol">Symbol</label>
+            <input autocomplete="off" autofocus class="form-control text-uppercase" id="symbol" name="symbol" placeholder="e.g. AAPL" type="text" required>
+        </div>
+        <div class="mb-4">
+            <label class="form-label text-secondary small" for="shares">Shares</label>
+            <input autocomplete="off" class="form-control" id="shares" min="1" name="shares" placeholder="Number of shares" type="number" required>
+        </div>
+        <button class="btn zf-btn-primary w-100" type="submit">Buy</button>
+    </form>
+</div>
 {% endblock %}

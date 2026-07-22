@@ -1,23 +1,305 @@
-/* Size for brand */
-nav .navbar-brand
-{
-    font-size: xx-large;
+/* Zen Finance — fintech theme tokens */
+:root {
+  --zf-bg: #0b1220;
+  --zf-bg-elevated: #121a2b;
+  --zf-surface: #162033;
+  --zf-border: rgba(148, 163, 184, 0.16);
+  --zf-text: #e8eef7;
+  --zf-muted: #94a3b8;
+  --zf-accent: #22d3a6;
+  --zf-accent-dim: rgba(34, 211, 166, 0.14);
+  --zf-danger: #f87171;
+  --zf-danger-dim: rgba(248, 113, 113, 0.14);
+  --zf-warning: #fbbf24;
+  --zf-radius: 14px;
+  --zf-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  --zf-font: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --zf-mono: "Cascadia Mono", "Consolas", ui-monospace, monospace;
 }
 
-/* Colors for brand */
-nav .navbar-brand .blue
-{
-    color: #537fbe;
+html {
+  color-scheme: dark;
 }
-nav .navbar-brand .red
-{
-    color: #ea433b;
+
+body.zf-body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--zf-font);
+  background:
+    radial-gradient(ellipse at top, rgba(34, 211, 166, 0.08), transparent 45%),
+    linear-gradient(180deg, #0d1526 0%, var(--zf-bg) 40%, #090f1a 100%);
+  color: var(--zf-text);
 }
-nav .navbar-brand .yellow
-{
-    color: #f5b82e;
+
+/* Navbar */
+.zf-nav {
+  background: rgba(18, 26, 43, 0.85) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--zf-border) !important;
 }
-nav .navbar-brand .green
-{
-    color: #2e944b;
+
+.zf-nav .navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.25rem;
+}
+
+.zf-nav .navbar-brand .brand-zen {
+  color: var(--zf-text);
+}
+
+.zf-nav .navbar-brand .brand-finance {
+  color: var(--zf-accent);
+}
+
+.zf-nav .nav-link {
+  color: var(--zf-muted) !important;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.zf-nav .nav-link:hover,
+.zf-nav .nav-link:focus {
+  color: var(--zf-text) !important;
+}
+
+.zf-nav .navbar-toggler {
+  border-color: var(--zf-border);
+}
+
+.zf-nav .navbar-toggler-icon {
+  filter: invert(1) grayscale(1);
+}
+
+/* Main */
+.zf-main {
+  max-width: 1100px;
+  text-align: left;
+}
+
+.zf-page-title {
+  font-size: clamp(1.5rem, 3vw, 1.9rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.35rem;
+}
+
+.zf-page-sub {
+  color: var(--zf-muted);
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+}
+
+/* Cards */
+.zf-card {
+  background: var(--zf-surface);
+  border: 1px solid var(--zf-border);
+  border-radius: var(--zf-radius);
+  box-shadow: var(--zf-shadow);
+  padding: 1.25rem 1.35rem;
+  height: 100%;
+}
+
+.zf-card-label {
+  color: var(--zf-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.45rem;
+}
+
+.zf-card-value {
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.zf-card-meta {
+  color: var(--zf-muted);
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
+}
+
+/* Tables */
+.zf-table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--zf-text);
+  --bs-table-border-color: var(--zf-border);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
+  --bs-table-hover-bg: rgba(34, 211, 166, 0.06);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.zf-table thead th {
+  color: var(--zf-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border-bottom-width: 1px;
+}
+
+.zf-table td,
+.zf-table th {
+  vertical-align: middle;
+  padding: 0.9rem 0.85rem;
+}
+
+.zf-symbol {
+  font-family: var(--zf-mono);
+  font-weight: 600;
+  color: var(--zf-accent);
+}
+
+/* Gain / loss */
+.zf-pos {
+  color: var(--zf-accent) !important;
+}
+
+.zf-neg {
+  color: var(--zf-danger) !important;
+}
+
+.zf-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.zf-pill-pos {
+  background: var(--zf-accent-dim);
+  color: var(--zf-accent);
+}
+
+.zf-pill-neg {
+  background: var(--zf-danger-dim);
+  color: var(--zf-danger);
+}
+
+/* Forms */
+.zf-form-card {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.zf-form-card .form-control,
+.zf-form-card .form-select {
+  background: var(--zf-bg-elevated);
+  border: 1px solid var(--zf-border);
+  color: var(--zf-text);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+}
+
+.zf-form-card .form-control:focus,
+.zf-form-card .form-select:focus {
+  background: var(--zf-bg-elevated);
+  border-color: var(--zf-accent);
+  color: var(--zf-text);
+  box-shadow: 0 0 0 0.2rem rgba(34, 211, 166, 0.15);
+}
+
+.zf-form-card .form-control::placeholder {
+  color: rgba(148, 163, 184, 0.7);
+}
+
+.zf-btn-primary {
+  --bs-btn-bg: var(--zf-accent);
+  --bs-btn-border-color: var(--zf-accent);
+  --bs-btn-hover-bg: #1bb892;
+  --bs-btn-hover-border-color: #1bb892;
+  --bs-btn-color: #04140f;
+  --bs-btn-hover-color: #04140f;
+  --bs-btn-font-weight: 650;
+  border-radius: 10px;
+  padding: 0.65rem 1.2rem;
+}
+
+.zf-btn-ghost {
+  color: var(--zf-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.zf-btn-ghost:hover {
+  color: var(--zf-accent);
+}
+
+/* Toasts / flashes */
+.zf-flash-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  padding: 0.75rem 1rem 0;
+}
+
+.zf-flash {
+  background: var(--zf-surface);
+  border: 1px solid rgba(34, 211, 166, 0.35);
+  border-left: 4px solid var(--zf-accent);
+  color: var(--zf-text);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  box-shadow: var(--zf-shadow);
+  margin: 0 auto 0.5rem;
+  max-width: 1100px;
+}
+
+/* Empty state */
+.zf-empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--zf-muted);
+}
+
+.zf-empty a {
+  color: var(--zf-accent);
+}
+
+/* Quote result */
+.zf-quote-price {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.zf-badge-source {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--zf-muted);
+  border: 1px solid var(--zf-border);
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+}
+
+/* Auth pages */
+.zf-auth-shell {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Apology */
+.zf-apology img {
+  border-radius: var(--zf-radius);
+  max-width: min(100%, 420px);
+}
+
+@media (max-width: 576px) {
+  .zf-card-value {
+    font-size: 1.3rem;
+  }
+
+  .zf-table {
+    font-size: 0.88rem;
+  }
 }

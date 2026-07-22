@@ -1,19 +1,36 @@
 import os
+import time
 import requests
 
 from flask import redirect, render_template, session
 from functools import wraps
+
+# Set by app.py after SQL is configured
+_db = None
+QUOTE_CACHE_TTL = int(os.environ.get("QUOTE_CACHE_TTL", "300"))  # seconds
+
+
+def configure_db(database):
+    """Attach the app database and ensure cache table exists."""
+    global _db
+    _db = database
+    _db.execute(
+        """
+        CREATE TABLE IF NOT EXISTS quote_cache (
+            symbol TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            price REAL NOT NULL,
+            source TEXT NOT NULL,
+            fetched_at INTEGER NOT NULL
+        )
+        """
+    )
 
 
 def apology(message, code=400):
     """Render message as an apology to user."""
 
     def escape(s):
-        """
-        Escape special characters.
-
-        https://github.com/jacebrowning/memegen#special-characters
-        """
         for old, new in [
             ("-", "--"),
             (" ", "-"),
@@ -31,12 +48,6 @@ def apology(message, code=400):
 
 
 def login_required(f):
-    """
-    Decorate routes to require login.
-
-    https://flask.palletsprojects.com/en/latest/patterns/viewdecorators.html
-    """
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if session.get("user_id") is None:
@@ -44,6 +55,58 @@ def login_required(f):
         return f(*args, **kwargs)
 
     return decorated_function
+
+
+def _cache_get(symbol):
+    if _db is None:
+        return None
+    rows = _db.execute("SELECT * FROM quote_cache WHERE symbol = ?", symbol)
+    if not rows:
+        return None
+    row = rows[0]
+    age = int(time.time()) - int(row["fetched_at"])
+    if age > QUOTE_CACHE_TTL:
+        return None
+    return {
+        "name": row["name"],
+        "price": float(row["price"]),
+        "symbol": symbol,
+        "source": row["source"],
+        "cached": True,
+        "age_seconds": age,
+    }
+
+
+def _cache_set(quote, source):
+    if _db is None or not quote:
+        return
+    now = int(time.time())
+    existing = _db.execute("SELECT symbol FROM quote_cache WHERE symbol = ?", quote["symbol"])
+    if existing:
+        _db.execute(
+            """
+            UPDATE quote_cache
+            SET name = ?, price = ?, source = ?, fetched_at = ?
+            WHERE symbol = ?
+            """,
+            quote["name"],
+            quote["price"],
+            source,
+            now,
+            quote["symbol"],
+        )
+    else:
+        _db.execute(
+            """
+            INSERT INTO quote_cache (symbol, name, price, source, fetched_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            quote["symbol"],
+            quote["name"],
+            quote["price"],
+            source,
+            now,
+        )
 
 
 def _lookup_alpha_vantage(symbol, api_key):
@@ -61,7 +124,6 @@ def _lookup_alpha_vantage(symbol, api_key):
         response.raise_for_status()
         data = response.json()
 
-        # Free-tier rate limit / premium upsell messages
         if "Note" in data or "Information" in data:
             print(f"Alpha Vantage limit: {data.get('Note') or data.get('Information')}")
             return None
@@ -74,11 +136,12 @@ def _lookup_alpha_vantage(symbol, api_key):
         if not price_raw:
             return None
 
-        # Use one API call only — free keys are limited (~25/day)
         return {
             "name": quote.get("01. symbol") or symbol,
             "price": float(price_raw),
             "symbol": symbol,
+            "source": "alphavantage",
+            "cached": False,
         }
     except requests.RequestException as e:
         print(f"Alpha Vantage request error: {e}")
@@ -98,6 +161,8 @@ def _lookup_cs50(symbol):
             "name": quote_data.get("companyName") or symbol,
             "price": float(quote_data["latestPrice"]),
             "symbol": symbol,
+            "source": "cs50",
+            "cached": False,
         }
     except requests.RequestException as e:
         print(f"CS50 request error: {e}")
@@ -110,23 +175,94 @@ def lookup(symbol):
     """
     Look up quote for symbol.
 
-    Prefers Alpha Vantage when ALPHA_VANTAGE_API_KEY is set.
-    Falls back to CS50 if Alpha Vantage fails or is rate-limited.
+    Order: fresh cache → Alpha Vantage → CS50 → stale cache (last resort).
     """
     if not symbol:
         return None
     symbol = symbol.upper().strip()
 
+    cached = _cache_get(symbol)
+    if cached is not None:
+        return cached
+
     api_key = os.environ.get("ALPHA_VANTAGE_API_KEY", "").strip()
+    result = None
+    source = None
+
     if api_key:
         result = _lookup_alpha_vantage(symbol, api_key)
-        if result is not None:
-            return result
-        print("Falling back to CS50 quote API")
+        source = "alphavantage"
+        if result is None:
+            print("Falling back to CS50 quote API")
 
-    return _lookup_cs50(symbol)
+    if result is None:
+        result = _lookup_cs50(symbol)
+        source = "cs50"
+
+    if result is not None:
+        _cache_set(result, source or result.get("source", "unknown"))
+        return result
+
+    # Last resort: return expired cache if present
+    if _db is not None:
+        rows = _db.execute("SELECT * FROM quote_cache WHERE symbol = ?", symbol)
+        if rows:
+            row = rows[0]
+            return {
+                "name": row["name"],
+                "price": float(row["price"]),
+                "symbol": symbol,
+                "source": row["source"] + "-stale",
+                "cached": True,
+                "age_seconds": int(time.time()) - int(row["fetched_at"]),
+            }
+
+    return None
+
+
+def average_cost(database, user_id, symbol):
+    """Weighted-average cost basis for remaining shares."""
+    rows = database.execute(
+        """
+        SELECT shares, price, transaction_type
+        FROM transactions
+        WHERE user_id = ? AND symbol = ?
+        ORDER BY id
+        """,
+        user_id,
+        symbol,
+    )
+    shares = 0.0
+    cost = 0.0
+    for row in rows:
+        qty = float(row["shares"])
+        price = float(row["price"])
+        if row["transaction_type"] == "BOUGHT":
+            cost += qty * price
+            shares += qty
+        else:
+            if shares <= 0:
+                continue
+            avg = cost / shares
+            sell_qty = min(qty, shares)
+            cost -= sell_qty * avg
+            shares -= sell_qty
+    if shares <= 0:
+        return None
+    return cost / shares
 
 
 def usd(value):
     """Format value as USD."""
-    return f"${value:,.2f}"
+    try:
+        return f"${float(value):,.2f}"
+    except (TypeError, ValueError):
+        return "$0.00"
+
+
+def pct(value):
+    """Format a fraction as a signed percent string."""
+    try:
+        return f"{float(value) * 100:+.2f}%"
+    except (TypeError, ValueError):
+        return "—"

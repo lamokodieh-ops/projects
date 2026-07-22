@@ -1,22 +1,24 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Log In
-{% endblock %}
+{% block title %}Log In{% endblock %}
 
 {% block main %}
-    <div>
-        <h2>Log Into Account</h2>
-    </div>
-    <div class="container mt-5">
+<div class="zf-auth-shell">
+    <div class="zf-card zf-form-card w-100">
+        <h1 class="zf-page-title">Log in</h1>
+        <p class="zf-page-sub mb-4">Access your Zen Finance portfolio.</p>
         <form action="/login" method="post">
             <div class="mb-3">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Username" type="text">
+                <label class="form-label text-secondary small" for="username">Username</label>
+                <input autocomplete="username" autofocus class="form-control" id="username" name="username" placeholder="Username" type="text" required>
             </div>
-            <div class="mb-3">
-                <input class="form-control mx-auto w-auto" name="password" placeholder="Password" type="password">
+            <div class="mb-4">
+                <label class="form-label text-secondary small" for="password">Password</label>
+                <input autocomplete="current-password" class="form-control" id="password" name="password" placeholder="Password" type="password" required>
             </div>
-            <button class="btn btn-primary" type="submit">Log In</button>
+            <button class="btn zf-btn-primary w-100" type="submit">Log in</button>
         </form>
+        <p class="text-center mt-3 mb-0"><a class="zf-btn-ghost" href="/register">Create an account</a></p>
     </div>
+</div>
 {% endblock %}

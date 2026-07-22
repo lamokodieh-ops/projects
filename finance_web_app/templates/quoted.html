@@ -1,29 +1,22 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Stock Quote
-{% endblock %}
+{% block title %}Quote{% endblock %}
 
 {% block main %}
-    <div>
-        <h2>Stock Quote</h2>
+<h1 class="zf-page-title">Quote result</h1>
+<p class="zf-page-sub">{{ stock.name }}</p>
+
+<div class="zf-card" style="max-width: 480px;">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="zf-symbol fs-4">{{ stock.symbol }}</span>
+        <span class="zf-badge-source">
+            {% if stock.cached %}cached · {% endif %}{{ stock.source or "live" }}
+        </span>
     </div>
-    <div class="container mt-5">
-        <table class="table table-striped table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">Stock Name</th>
-                    <th scope="col">Stock Symbol</th>
-                    <th scope="col">Stock Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{stock.name}}</td>
-                    <td>{{stock.symbol}}</td>
-                    <td>{{stock.price | usd}}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="zf-quote-price mb-3">{{ stock.price | usd }}</div>
+    <div class="d-flex gap-2">
+        <a class="btn zf-btn-primary" href="/buy">Buy {{ stock.symbol }}</a>
+        <a class="btn btn-outline-light" href="/quote">Another quote</a>
     </div>
+</div>
 {% endblock %}
