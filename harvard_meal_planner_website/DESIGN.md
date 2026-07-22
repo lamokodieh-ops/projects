@@ -28,7 +28,7 @@ Harvard Meal Planner is a full-stack web application built using Flask (Python) 
 
 | Layer | Technology | Rationale |
 |-------|------------|-----------|
-| Backend | Flask 3.0.0 | Lightweight Python framework, perfect for CS50's scope. Easy to learn, well-documented. |
+| Backend | Flask 3.0.0 | Lightweight Python framework — easy to learn and well-documented. |
 | Database | SQLite | File-based, no server required, portable, built into Python. |
 | Frontend | HTML5/CSS3/JS | Universal browser support, no build tools needed. |
 | Templating | Jinja2 | Comes with Flask, powerful template inheritance. |
@@ -48,7 +48,7 @@ The application uses a single `app.py` file containing all routes, database oper
 ## Project Structure
 
 ```
-CS50_project/
+harvard_meal_planner_website/
 ├── app.py                 # Main Flask application (all routes and logic)
 ├── requirements.txt       # Python package dependencies
 ├── meal_planner.db        # SQLite database (created on first run)

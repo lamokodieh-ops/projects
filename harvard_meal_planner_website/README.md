@@ -327,8 +327,6 @@ This can happen if another process is accessing the database.
 
 ## Credits
 
-This project was created as a final project for **Harvard's CS50: Introduction to Computer Science**.
-
 - **Framework**: Flask (Python)
 - **Database**: SQLite
 - **Styling**: Custom CSS with Harvard Crimson theme

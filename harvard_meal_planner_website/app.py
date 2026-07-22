@@ -1,4 +1,4 @@
-# FeedMe (Harvard Meal Planner) - CS50 Final Project
+# FeedMe (Harvard Meal Planner)
 # A web-based meal planning app with Harvard HUDS dining integration
 # See README.md for usage and DESIGN.md for technical details
 
