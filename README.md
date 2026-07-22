@@ -9,7 +9,6 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 | [AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | Mock mode works without OpenAI key |
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | Deploy to [Render](https://render.com) · [Video demo](https://youtu.be/gQS6CYNJGTA) |
 | [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | See README (CLI — not a web app) |
-| [Zen Finance](./archive/finance_web_app) *(archived)* | Flask stock portfolio | Inactive — see archived README | Not deployed |
 
 ## Clone
 
@@ -37,4 +36,3 @@ Then visit: `https://lamokodieh-ops.github.io/projects/`
 - Flask apps include a `Procfile` for Render / Railway / Heroku-style hosts.
 - InLumine uses SQLite locally; use PostgreSQL for production (instructions in its README).
 - Secrets (`.env`, session files, compiled binaries) are gitignored where relevant.
-- Inactive projects live under [`archive/`](./archive). **Zen Finance** is archived there and is not part of the active portfolio.
