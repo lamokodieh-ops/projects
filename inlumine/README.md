@@ -14,12 +14,36 @@ Built from the Alumni Management System use-case specification with role-based a
 ## Quick start
 
 ```bash
+cd inlumine
+copy .env.example .env   # Windows
+# cp .env.example .env   # macOS / Linux
+
 npm install
 npm run db:setup
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+## Deploy for display (Vercel)
+
+InLumine is a full-stack Next.js app (auth + database). **GitHub Pages cannot host it.**
+
+1. Import `lamokodieh-ops/projects` into [Vercel](https://vercel.com).
+2. Set **Root Directory** to `inlumine`.
+3. Add a Postgres database (Vercel Postgres, Neon, or Supabase).
+4. In `prisma/schema.prisma`, set `provider = "postgresql"`.
+5. Environment variables:
+   - `DATABASE_URL` — from your Postgres provider
+   - `NEXTAUTH_SECRET` — long random string
+   - `NEXTAUTH_URL` — your Vercel URL (e.g. `https://your-app.vercel.app`)
+6. After first deploy, run seed once against the hosted DB:
+   ```bash
+   npx prisma db push
+   npx tsx prisma/seed.ts
+   ```
+
+A `vercel.json` is included for Next.js build defaults.
 
 ## Demo accounts
 

@@ -9,6 +9,7 @@ from helpers import apology, login_required, lookup, usd
 
 # Configure application
 app = Flask(__name__)
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -417,3 +418,8 @@ def deposit():
         return redirect("/")
 
     return render_template("deposit.html")
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")

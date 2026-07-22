@@ -1,0 +1,13 @@
+# Build outputs
+event_manager
+event_manager.exe
+*.o
+*.obj
+
+# Runtime data
+credentials.bin
+events.bin
+
+# Editor / OS
+.DS_Store
+Thumbs.db

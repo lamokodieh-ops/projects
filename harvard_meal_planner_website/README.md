@@ -40,11 +40,8 @@ Before you begin, make sure you have:
 Download or clone the project files to your computer:
 
 ```bash
-# If using git
-git clone [repository-url]
-cd CS50_project
-
-# Or simply download and extract the ZIP file
+git clone https://github.com/lamokodieh-ops/projects.git
+cd projects/harvard_meal_planner_website
 ```
 
 ### Step 2: Install Dependencies
@@ -74,6 +71,21 @@ You should see output similar to:
 ```
  * Running on http://127.0.0.1:5000
 ```
+
+### Deploy for display (Render)
+
+This is a Flask app — use a Python host (not GitHub Pages).
+
+1. Create a free [Render](https://render.com) **Web Service** from this repo.
+2. Settings:
+   - **Root Directory:** `harvard_meal_planner_website`
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn app:app`
+3. Set env var `SECRET_KEY` to a long random string.
+
+Or use the included [`render.yaml`](./render.yaml) Blueprint.
+
+**Video demo:** https://youtu.be/gQS6CYNJGTA
 
 ### Step 4: Access the Application
 

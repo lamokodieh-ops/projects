@@ -38,9 +38,8 @@ import re
 # Initialize Flask application
 app = Flask(__name__)
 
-# Secret key for session encryption
-# Using os.urandom() means sessions are invalidated on app restart
-app.secret_key = os.urandom(24)
+# Secret key for session encryption (set SECRET_KEY in production)
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 # SQLite database file path
 DATABASE = 'meal_planner.db'
@@ -1324,7 +1323,9 @@ def export_feedback():
 
 # APPLICATION ENTRY POINT
 
+# Ensure DB exists when started via gunicorn / production servers
+init_db()
+
 if __name__ == '__main__':
-    # Create tables on startup
-    init_db()  
-    app.run(debug=False)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=os.environ.get("FLASK_DEBUG") == "1")
