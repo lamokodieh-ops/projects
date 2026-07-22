@@ -55,12 +55,41 @@ export type StreamHandlers = {
   onError?: (message: string) => void;
 };
 
+export function startQuiz(materialId: number) {
+  return request<{
+    session_id: number;
+    questions: { index: number; prompt: string; hint?: string | null }[];
+    sources: import("./types").SourceChunk[];
+    total: number;
+  } & LlmStatus>("/api/quiz/start", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ material_id: materialId }),
+  });
+}
+
+export function gradeQuizAnswer(body: { session_id: number; index: number; answer: string }) {
+  return request<
+    {
+      index: number;
+      correct: boolean;
+      score: number;
+      feedback: string;
+      expected: string;
+    } & LlmStatus
+  >("/api/quiz/grade", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
 export async function streamGenerate(
   body: { material_id: number; task: string; question?: string },
   handlers: StreamHandlers,
   signal?: AbortSignal,
 ) {
-  const res = await fetch("/api/generate", {
+  const res = await fetch(`${BASE}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
     body: JSON.stringify(body),

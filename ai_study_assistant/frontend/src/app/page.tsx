@@ -46,22 +46,22 @@ export default function HomePage() {
     <main className="shell">
       <header className="topbar">
         <div className="brand">
-          AI Study <span>Assistant</span>
+          Study <span>Assistant</span>
         </div>
         <ModeBadge status={status} />
       </header>
 
       <section className="hero">
-        <h1>Study from your own materials — grounded, inspectable, fast.</h1>
+        <h1>Grounded study help from your own notes.</h1>
         <p>
-          Upload a PDF or paste notes. Retrieval-augmented generation produces explanations,
-          quizzes, and summaries with visible source chunks to reduce hallucinations.
+          Upload a reading or paste notes. Get explanations, quizzes, and summaries with the
+          source passages shown beside every answer.
         </p>
       </section>
 
       <div className="grid">
         <section className="panel">
-          <h2>Add course material</h2>
+          <h2>New material</h2>
           <form onSubmit={onSubmit}>
             <div className="field">
               <label htmlFor="title">Title</label>
@@ -69,11 +69,11 @@ export default function HomePage() {
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Week 3 — Photosynthesis"
+                placeholder="Week 3 — Photosynthesis"
               />
             </div>
             <div className="field">
-              <label htmlFor="file">PDF or TXT upload</label>
+              <label htmlFor="file">PDF or TXT</label>
               <input
                 id="file"
                 type="file"
@@ -87,28 +87,27 @@ export default function HomePage() {
                 id="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Paste lecture notes, readings, or slides text…"
+                placeholder="Lecture notes, readings…"
               />
             </div>
             {error && <p className="error">{error}</p>}
             <button className="btn btn-primary" type="submit" disabled={busy}>
-              {busy ? "Ingesting…" : "Ingest & open workspace"}
+              {busy ? "Working…" : "Continue"}
             </button>
           </form>
         </section>
 
         <section className="panel">
-          <h2>Your library</h2>
+          <h2>Library</h2>
           {materials.length === 0 ? (
-            <p className="muted">No materials yet. Upload something to begin.</p>
+            <p className="muted">Nothing here yet.</p>
           ) : (
             <div className="list">
               {materials.map((m) => (
                 <Link key={m.id} href={`/materials/${m.id}`} className="card-link">
                   <strong>{m.title}</strong>
                   <div className="meta">
-                    {m.source_type.toUpperCase()} · {m.chunk_count} chunks ·{" "}
-                    {new Date(m.created_at).toLocaleString()}
+                    {m.chunk_count} chunks · {new Date(m.created_at).toLocaleDateString()}
                   </div>
                 </Link>
               ))}

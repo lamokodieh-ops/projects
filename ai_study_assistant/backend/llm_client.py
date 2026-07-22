@@ -9,7 +9,6 @@ Unified LLM + embedding client.
 from __future__ import annotations
 
 import hashlib
-import json
 import math
 import re
 import time
@@ -129,122 +128,21 @@ class LLMClient:
                 yield delta
 
     def _stream_mock(self, messages: list[dict], *, task: str) -> Iterator[str]:
-        user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-        context = ""
-        if "Source materials:" in user:
-            context = user.split("Source materials:", 1)[-1][:500].strip()
-        topic = _guess_topic(user, context)
-
-        if task == "quiz":
-            text = _mock_quiz(topic, context)
-        elif task == "summary":
-            text = _mock_summary(topic, context)
-        else:
-            text = _mock_explanation(topic, context)
-
-        # Simulate low-latency streaming
+        text = _mock_placeholder(task)
         for word in text.split(" "):
             yield word + " "
-            time.sleep(0.012)
+            time.sleep(0.008)
 
 
-def _guess_topic(user: str, context: str) -> str:
-    for line in (context or user).splitlines():
-        line = line.strip(" #-")
-        if 12 < len(line) < 80:
-            return line
-    return "the uploaded course material"
-
-
-def _mock_explanation(topic: str, context: str) -> str:
-    snippet = (context[:280] + "…") if len(context) > 280 else (context or "the provided excerpts")
-    return f"""**[MOCK MODE — no OpenAI API key]**
-
-## Explanation: {topic}
-
-This explanation is grounded in the retrieved excerpts below (paraphrased for clarity).
-
-### Plain-language overview
-{topic} can be understood by breaking it into (1) the core idea, (2) why it matters in the course, and (3) a concrete example from your materials.
-
-### From your materials
-> {snippet}
-
-### How to remember it
-- Restate the idea in one sentence without jargon.
-- Connect it to a prior concept from the same reading.
-- Ask: what would change if this assumption were false?
-
-### Quick check
-If you can teach this back to a peer using only the source chunks shown in the sidebar, you have a solid grasp.
-
-*Replace `OPENAI_API_KEY` in `backend/.env` and restart to generate live RAG answers.*
-"""
-
-
-def _mock_summary(topic: str, context: str) -> str:
-    bullets = []
-    for line in context.splitlines():
-        line = line.strip()
-        if len(line) > 40:
-            bullets.append(line[:120])
-        if len(bullets) >= 4:
-            break
-    if not bullets:
-        bullets = [
-            f"Key theme related to {topic}",
-            "Supporting definition or claim from the reading",
-            "Implication or application discussed in the material",
-            "Open question or caveat to revisit before an exam",
-        ]
-    body = "\n".join(f"- {b}" for b in bullets)
-    return f"""**[MOCK MODE — no OpenAI API key]**
-
-## Summary: {topic}
-
-{body}
-
-### One-sentence takeaway
-{topic} is best reviewed by pairing this summary with the cited source chunks.
-
-*Live mode uses the same RAG pipeline with OpenAI for higher-quality synthesis.*
-"""
-
-
-def _mock_quiz(topic: str, context: str) -> str:
-    return f"""**[MOCK MODE — no OpenAI API key]**
-
-## Quiz: {topic}
-
-**1.** Which statement best matches the retrieved material?
-- A. The topic is unrelated to the uploaded reading
-- B. The material introduces or develops ideas about {topic}
-- C. The excerpt only contains bibliography entries
-- D. No claims can be made without internet search
-
-**Answer:** B  
-**Why:** Retrieval selected passages discussing {topic}; a grounded answer should stay within those excerpts.
-
-**2.** What is a good study move after reading the sources?
-- A. Memorize the mock banner text
-- B. Ignore citations and invent details
-- C. Paraphrase each chunk, then self-test without looking
-- D. Skip to another unrelated chapter
-
-**Answer:** C  
-**Why:** Active recall plus grounding in retrieved chunks reduces hallucination risk.
-
-**3.** True or false: In this app, generated answers should cite the source chunks panel.
-- A. True
-- B. False
-
-**Answer:** A  
-**Why:** Showing retrieved context makes factual grounding inspectable (a fellowship evaluation criterion).
-
-```json
-{json.dumps({"questions": 3, "format": "mcq", "mode": "mock"}, indent=2)}
-```
-"""
+def _mock_placeholder(task: str) -> str:
+    label = {"explain": "Explanation", "quiz": "Quiz", "summary": "Summary"}.get(task, task.title())
+    return (
+        f"[Mock mode - {label} placeholder]\n\n"
+        "Generated study content is disabled without an API key.\n\n"
+        "The Sources panel still shows the passages this app would ground on "
+        "(retrieval works in mock mode). Add OPENAI_API_KEY to backend/.env "
+        "and restart the server for live explanations, quizzes, and summaries."
+    )
 
 
 llm = LLMClient()

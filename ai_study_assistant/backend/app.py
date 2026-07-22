@@ -5,11 +5,13 @@ from config import SECRET_KEY, ensure_dirs
 from db import init_db
 from routes.generate import generate_bp
 from routes.materials import materials_bp
+from seed_demo import seed_mock_materials_if_empty
 
 
 def create_app() -> Flask:
     ensure_dirs()
     init_db()
+    seed_mock_materials_if_empty()
     app = Flask(__name__)
     app.config["SECRET_KEY"] = SECRET_KEY
     CORS(app, resources={r"/api/*": {"origins": "*"}})

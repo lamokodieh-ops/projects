@@ -42,8 +42,43 @@ def init_db() -> None:
                 created_at TEXT NOT NULL,
                 FOREIGN KEY (material_id) REFERENCES materials(id)
             );
+
+            CREATE TABLE IF NOT EXISTS quiz_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                material_id INTEGER NOT NULL,
+                questions_json TEXT NOT NULL,
+                sources_json TEXT NOT NULL,
+                mode TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (material_id) REFERENCES materials(id)
+            );
             """
         )
+
+
+def create_quiz_session(material_id: int, questions: list[dict], sources: list[dict], mode: str) -> dict:
+    created = utcnow()
+    with connect() as conn:
+        cur = conn.execute(
+            """
+            INSERT INTO quiz_sessions (material_id, questions_json, sources_json, mode, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (material_id, json.dumps(questions), json.dumps(sources), mode, created),
+        )
+        sid = cur.lastrowid
+    return get_quiz_session(sid)
+
+
+def get_quiz_session(session_id: int) -> dict | None:
+    with connect() as conn:
+        row = conn.execute("SELECT * FROM quiz_sessions WHERE id = ?", (session_id,)).fetchone()
+    if not row:
+        return None
+    data = dict(row)
+    data["questions"] = json.loads(data.pop("questions_json"))
+    data["sources"] = json.loads(data.pop("sources_json"))
+    return data
 
 
 def create_material(title: str, source_type: str, filename: str | None, char_count: int, chunk_count: int) -> dict:
