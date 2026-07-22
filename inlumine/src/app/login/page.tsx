@@ -11,8 +11,8 @@ import { PageTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("kwabena@example.com");
+  const [password, setPassword] = useState("Alumni123!");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -68,6 +68,10 @@ export default function LoginPage() {
               {loading ? "Signing in…" : "Sign in"}
             </Button>
           </form>
+          <p className="mt-6 text-xs text-muted">
+            Demo account: <code className="text-navy">kwabena@example.com</code> /{" "}
+            <code className="text-navy">Alumni123!</code>
+          </p>
           <p className="mt-10 text-sm text-muted">
             No account?{" "}
             <Link href="/register" className="text-navy border-b border-gold/60 hover:border-navy transition-colors">
