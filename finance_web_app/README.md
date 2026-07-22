@@ -4,6 +4,17 @@ CS50-style Flask stock-trading web app. Quote prices, buy/sell shares, and track
 
 ## Quick start (local)
 
+### Windows (easiest)
+
+Double-click `run.bat`, or in a terminal:
+
+```bash
+cd finance_web_app
+.\run.bat
+```
+
+### Manual setup
+
 ```bash
 cd finance_web_app
 python -m venv .venv
@@ -33,7 +44,7 @@ SECRET_KEY=any-long-random-string
 
 If the key is missing, the app falls back to the CS50 quote API.
 
-**Free-tier note:** Alpha Vantage rate-limits requests (often a few per minute / day on free keys). If quotes fail intermittently, wait a minute and try again.
+**Free-tier note:** Alpha Vantage free keys are limited (about **25 requests per day**). The app uses **one request per quote** and automatically falls back to the CS50 quote API when Alpha Vantage is rate-limited, so the app keeps working.
 
 ## Requirements
 

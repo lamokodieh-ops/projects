@@ -4,9 +4,6 @@ import requests
 from flask import redirect, render_template, session
 from functools import wraps
 
-# Simple in-memory cache for company names (saves Alpha Vantage quota)
-_name_cache = {}
-
 
 def apology(message, code=400):
     """Render message as an apology to user."""
@@ -37,7 +34,7 @@ def login_required(f):
     """
     Decorate routes to require login.
 
-    https://flask.palletsprojects.com/en/latest/patterns/viewdecorators/
+    https://flask.palletsprojects.com/en/latest/patterns/viewdecorators.html
     """
 
     @wraps(f)
@@ -49,42 +46,8 @@ def login_required(f):
     return decorated_function
 
 
-def _company_name(symbol, api_key):
-    """Resolve a human-readable company name via Alpha Vantage SYMBOL_SEARCH."""
-    if symbol in _name_cache:
-        return _name_cache[symbol]
-
-    try:
-        response = requests.get(
-            "https://www.alphavantage.co/query",
-            params={
-                "function": "SYMBOL_SEARCH",
-                "keywords": symbol,
-                "apikey": api_key,
-            },
-            timeout=10,
-        )
-        response.raise_for_status()
-        data = response.json()
-        matches = data.get("bestMatches") or []
-        for match in matches:
-            if match.get("1. symbol", "").upper() == symbol:
-                name = match.get("2. name") or symbol
-                _name_cache[symbol] = name
-                return name
-        if matches:
-            name = matches[0].get("2. name") or symbol
-            _name_cache[symbol] = name
-            return name
-    except (requests.RequestException, KeyError, ValueError, TypeError) as e:
-        print(f"Alpha Vantage name lookup error: {e}")
-
-    _name_cache[symbol] = symbol
-    return symbol
-
-
 def _lookup_alpha_vantage(symbol, api_key):
-    """Look up quote using Alpha Vantage GLOBAL_QUOTE."""
+    """Look up quote using one Alpha Vantage GLOBAL_QUOTE call."""
     try:
         response = requests.get(
             "https://www.alphavantage.co/query",
@@ -98,9 +61,9 @@ def _lookup_alpha_vantage(symbol, api_key):
         response.raise_for_status()
         data = response.json()
 
-        # Rate-limit / error messages from Alpha Vantage
+        # Free-tier rate limit / premium upsell messages
         if "Note" in data or "Information" in data:
-            print(f"Alpha Vantage limit/info: {data.get('Note') or data.get('Information')}")
+            print(f"Alpha Vantage limit: {data.get('Note') or data.get('Information')}")
             return None
         if "Error Message" in data:
             print(f"Alpha Vantage error: {data['Error Message']}")
@@ -111,8 +74,9 @@ def _lookup_alpha_vantage(symbol, api_key):
         if not price_raw:
             return None
 
+        # Use one API call only — free keys are limited (~25/day)
         return {
-            "name": _company_name(symbol, api_key),
+            "name": quote.get("01. symbol") or symbol,
             "price": float(price_raw),
             "symbol": symbol,
         }
@@ -131,25 +95,35 @@ def _lookup_cs50(symbol):
         response.raise_for_status()
         quote_data = response.json()
         return {
-            "name": quote_data["companyName"],
-            "price": quote_data["latestPrice"],
+            "name": quote_data.get("companyName") or symbol,
+            "price": float(quote_data["latestPrice"]),
             "symbol": symbol,
         }
     except requests.RequestException as e:
         print(f"CS50 request error: {e}")
-    except (KeyError, ValueError) as e:
+    except (KeyError, ValueError, TypeError) as e:
         print(f"CS50 data parsing error: {e}")
     return None
 
 
 def lookup(symbol):
-    """Look up quote for symbol (Alpha Vantage if configured, else CS50)."""
+    """
+    Look up quote for symbol.
+
+    Prefers Alpha Vantage when ALPHA_VANTAGE_API_KEY is set.
+    Falls back to CS50 if Alpha Vantage fails or is rate-limited.
+    """
     if not symbol:
         return None
     symbol = symbol.upper().strip()
+
     api_key = os.environ.get("ALPHA_VANTAGE_API_KEY", "").strip()
     if api_key:
-        return _lookup_alpha_vantage(symbol, api_key)
+        result = _lookup_alpha_vantage(symbol, api_key)
+        if result is not None:
+            return result
+        print("Falling back to CS50 quote API")
+
     return _lookup_cs50(symbol)
 
 
