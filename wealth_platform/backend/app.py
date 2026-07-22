@@ -1,5 +1,4 @@
 import os
-import random
 from datetime import datetime, timedelta, timezone
 
 from dotenv import load_dotenv
@@ -13,6 +12,7 @@ from flask_jwt_extended import (
 )
 
 from models import Investment, PortfolioSnapshot, Transaction, User, db, utcnow
+from quotes import CRYPTO_SYMBOLS, lookup, lookup_live
 
 load_dotenv()
 
@@ -56,8 +56,23 @@ def portfolio_totals(user: User):
     }
 
 
-def record_snapshot(user: User):
+def record_snapshot(user: User, *, force: bool = False):
+    """Write a net-worth point. Throttle automatic price refreshes to once per 5 minutes."""
     totals = portfolio_totals(user)
+    if not force:
+        latest = (
+            PortfolioSnapshot.query.filter_by(user_id=user.id)
+            .order_by(PortfolioSnapshot.recorded_at.desc())
+            .first()
+        )
+        if latest and latest.recorded_at:
+            latest_at = latest.recorded_at
+            if latest_at.tzinfo is None:
+                latest_at = latest_at.replace(tzinfo=timezone.utc)
+            age = (utcnow() - latest_at).total_seconds()
+            if age < 300:
+                return latest
+
     snap = PortfolioSnapshot(
         user_id=user.id,
         total_value=totals["total_value"],
@@ -91,7 +106,7 @@ def register_routes(app: Flask):
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-        record_snapshot(user)
+        record_snapshot(user, force=True)
 
         token = create_access_token(identity=str(user.id))
         return jsonify({"access_token": token, "user": user.to_dict()}), 201
@@ -185,25 +200,59 @@ def register_routes(app: Flask):
     @app.post("/api/prices/refresh")
     @jwt_required()
     def refresh_prices():
-        """Simulate live market ticks for demo trend visualization."""
+        """Live tick: refresh stale quotes (Yahoo mark-to-market, Polygon backup)."""
         user = User.query.get(int(get_jwt_identity()))
         if not user:
             return jsonify({"error": "User not found."}), 404
 
+        # Allow burst on first paint; steady live mode uses 2 network calls/tick
+        try:
+            max_calls = int(request.args.get("max_calls", 2))
+        except ValueError:
+            max_calls = 2
+        max_calls = max(1, min(max_calls, 6))
+
+        quotes = lookup_live(
+            [(inv.symbol, inv.current_price) for inv in user.investments],
+            max_network_calls=max_calls,
+        )
+
+        updated = 0
+        sources = {}
         for inv in user.investments:
-            # Small random walk ±1.2%
-            delta = random.uniform(-0.012, 0.012)
-            inv.current_price = max(0.01, inv.current_price * (1 + delta))
+            quote = quotes.get(inv.symbol.upper())
+            if not quote:
+                continue
+            new_price = float(quote["price"])
+            if abs(new_price - inv.current_price) > 1e-6:
+                updated += 1
+            inv.current_price = new_price
+            qname = (quote.get("name") or "").strip()
+            if qname and qname.upper() != inv.symbol and len(qname) > 4:
+                if inv.symbol in CRYPTO_SYMBOLS or inv.name == inv.symbol:
+                    inv.name = qname
             inv.updated_at = utcnow()
+            sources[inv.symbol] = quote.get("source", "unknown")
 
         db.session.commit()
         snap = record_snapshot(user)
         totals = portfolio_totals(user)
+        holdings = sorted(user.investments, key=lambda i: i.market_value, reverse=True)
+        allocation = {}
+        for inv in holdings:
+            allocation[inv.asset_class] = allocation.get(inv.asset_class, 0) + inv.market_value
+
         return jsonify(
             {
                 "summary": totals,
-                "holdings": [h.to_dict() for h in user.investments],
+                "holdings": [h.to_dict() for h in holdings],
                 "snapshot": snap.to_dict(),
+                "allocation": [
+                    {"asset_class": k, "amount": round(v, 2)} for k, v in sorted(allocation.items())
+                ],
+                "updated": updated,
+                "sources": sources,
+                "server_time": utcnow().isoformat(),
             }
         )
 
@@ -224,13 +273,23 @@ def register_routes(app: Flask):
             name = (data.get("name") or symbol).strip()
             shares = float(data.get("shares", 0))
             avg_cost = float(data.get("avg_cost", 0))
-            current_price = float(data.get("current_price", avg_cost))
+            price_raw = data.get("current_price")
+            current_price = float(price_raw) if price_raw not in (None, "") else 0.0
             asset_class = (data.get("asset_class") or "Equity").strip()
         except (TypeError, ValueError):
             return jsonify({"error": "Invalid investment payload."}), 400
 
         if not symbol or shares <= 0 or avg_cost <= 0:
             return jsonify({"error": "Symbol, shares, and avg_cost are required."}), 400
+
+        quote = lookup(symbol)
+        if quote:
+            if current_price <= 0:
+                current_price = float(quote["price"])
+            if not data.get("name"):
+                name = quote.get("name") or name
+        elif current_price <= 0:
+            current_price = avg_cost
 
         cost = shares * avg_cost
         if cost > user.cash_balance:
@@ -270,7 +329,7 @@ def register_routes(app: Flask):
             )
         )
         db.session.commit()
-        record_snapshot(user)
+        record_snapshot(user, force=True)
         return jsonify({"investment": inv.to_dict(), "cash_balance": round(user.cash_balance, 2)}), 201
 
     @app.delete("/api/investments/<int:inv_id>")
@@ -295,7 +354,7 @@ def register_routes(app: Flask):
         )
         db.session.delete(inv)
         db.session.commit()
-        record_snapshot(user)
+        record_snapshot(user, force=True)
         return jsonify({"ok": True, "cash_balance": round(user.cash_balance, 2)})
 
     @app.get("/api/transactions")
@@ -353,7 +412,7 @@ def register_routes(app: Flask):
         )
         db.session.add(tx)
         db.session.commit()
-        record_snapshot(user)
+        record_snapshot(user, force=True)
         return jsonify({"transaction": tx.to_dict(), "cash_balance": round(user.cash_balance, 2)}), 201
 
     @app.delete("/api/transactions/<int:tx_id>")

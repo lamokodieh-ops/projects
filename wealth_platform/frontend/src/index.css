@@ -408,6 +408,80 @@ h3 {
   animation: pulse 2s infinite;
 }
 
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.panel-head h2 {
+  margin-bottom: 0;
+}
+
+.chart-toggle {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.15rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.chart-toggle button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.chart-toggle button.active {
+  background: rgba(196, 165, 116, 0.2);
+  color: var(--brass-bright);
+}
+
+.live-value {
+  display: inline-block;
+  transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.live-value.flash-up {
+  color: var(--gain);
+  animation: tickUp 0.65s ease;
+}
+
+.live-value.flash-down {
+  color: var(--loss);
+  animation: tickDown 0.65s ease;
+}
+
+@keyframes tickUp {
+  0% {
+    transform: translateY(3px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes tickDown {
+  0% {
+    transform: translateY(-3px);
+    opacity: 0.7;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

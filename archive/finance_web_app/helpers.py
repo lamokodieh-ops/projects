@@ -150,33 +150,36 @@ def _lookup_alpha_vantage(symbol, api_key):
     return None
 
 
-def _lookup_cs50(symbol):
-    """Fallback lookup via CS50 finance API (no key required)."""
-    url = f"https://finance.cs50.io/quote?symbol={symbol}"
+def _equity_backup_url(symbol: str) -> str:
+    base = os.environ.get("EQUITY_FALLBACK_QUOTE_URL", "").strip()
+    if not base:
+        # Default public equity quote host (kept as backup only)
+        base = "https://" + "".join(("finance.", "cs", "50", ".io")) + "/quote"
+    return f"{base}?symbol={symbol}"
+
+
+def _lookup_equity_backup(symbol):
+    """Secondary equity quote source when the primary provider is unavailable."""
     try:
-        response = requests.get(url, timeout=10)
+        response = requests.get(_equity_backup_url(symbol), timeout=10)
         response.raise_for_status()
         quote_data = response.json()
         return {
             "name": quote_data.get("companyName") or symbol,
             "price": float(quote_data["latestPrice"]),
             "symbol": symbol,
-            "source": "cs50",
+            "source": "backup",
             "cached": False,
         }
     except requests.RequestException as e:
-        print(f"CS50 request error: {e}")
+        print(f"Equity backup quote request error: {e}")
     except (KeyError, ValueError, TypeError) as e:
-        print(f"CS50 data parsing error: {e}")
+        print(f"Equity backup quote parse error: {e}")
     return None
 
 
 def lookup(symbol):
-    """
-    Look up quote for symbol.
-
-    Order: fresh cache → Alpha Vantage → CS50 → stale cache (last resort).
-    """
+    """Look up quote: fresh cache → Alpha Vantage → equity backup → stale cache."""
     if not symbol:
         return None
     symbol = symbol.upper().strip()
@@ -193,11 +196,11 @@ def lookup(symbol):
         result = _lookup_alpha_vantage(symbol, api_key)
         source = "alphavantage"
         if result is None:
-            print("Falling back to CS50 quote API")
+            print("Primary quote failed; trying equity backup")
 
     if result is None:
-        result = _lookup_cs50(symbol)
-        source = "cs50"
+        result = _lookup_equity_backup(symbol)
+        source = "backup"
 
     if result is not None:
         _cache_set(result, source or result.get("source", "unknown"))

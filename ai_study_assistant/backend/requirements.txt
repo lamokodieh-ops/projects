@@ -1,0 +1,10 @@
+flask==3.1.0
+flask-cors==5.0.1
+python-dotenv==1.0.1
+pypdf==5.1.0
+numpy==2.2.2
+openai==1.61.0
+gunicorn==23.0.0
+# Optional (install when using local embeddings):
+# sentence-transformers>=3.0.0
+# faiss-cpu>=1.8.0

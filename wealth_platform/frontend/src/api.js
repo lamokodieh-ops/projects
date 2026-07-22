@@ -34,7 +34,8 @@ export const api = {
   me: () => request('/api/auth/me'),
   dashboard: () => request('/api/dashboard'),
   trends: () => request('/api/trends'),
-  refreshPrices: () => request('/api/prices/refresh', { method: 'POST' }),
+  refreshPrices: (maxCalls = 2) =>
+    request(`/api/prices/refresh?max_calls=${maxCalls}`, { method: 'POST' }),
   investments: () => request('/api/investments'),
   addInvestment: (body) =>
     request('/api/investments', { method: 'POST', body: JSON.stringify(body) }),

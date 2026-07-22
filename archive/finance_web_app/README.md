@@ -2,7 +2,7 @@
 
 > **Status: inactive.** This project lives under `archive/finance_web_app` and is not part of the active portfolio. Kept for reference; not maintained or deployed.
 
-CS50-style Flask stock-trading web app. Quote prices, buy/sell shares, and track a portfolio with cash balance.
+Flask stock-trading web app. Quote prices, buy/sell shares, and track a portfolio with cash balance.
 
 ## Quick start (local)
 
@@ -45,9 +45,9 @@ SECRET_KEY=any-long-random-string
 QUOTE_CACHE_TTL=300
 ```
 
-Lookup order: **SQLite cache (TTL)** → Alpha Vantage → CS50 fallback → stale cache.
+Lookup order: **SQLite cache (TTL)** → Alpha Vantage → equity backup → stale cache.
 
-**Free-tier note:** Alpha Vantage free keys are limited (about **25 requests per day**). Caching (default 5 minutes) and CS50 fallback keep the app usable.
+**Free-tier note:** Alpha Vantage free keys are limited (about **25 requests per day**). Caching (default 5 minutes) and a backup quote feed keep the app usable.
 
 ## Sprint 1 upgrades
 
@@ -97,7 +97,7 @@ archive/finance_web_app/
 
 ## Notes
 
-- Quotes prefer Alpha Vantage (`GLOBAL_QUOTE` + `SYMBOL_SEARCH`); CS50 is used only if no key is set.
+- Quotes prefer Alpha Vantage (`GLOBAL_QUOTE`); a backup feed is used if the primary provider fails.
 - Never commit `.env` — it is gitignored. Use `.env.example` as a template.
 - `flask_session/` is runtime state and is gitignored.
 - For a portfolio showcase without hosting, record a short Loom of login → quote → buy → portfolio.

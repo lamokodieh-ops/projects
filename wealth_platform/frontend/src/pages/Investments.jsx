@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { api, formatPct, formatUsd } from '../api'
 import { useAuth } from '../AuthContext'
+import LiveValue from '../components/LiveValue'
+import { useLivePrices } from '../hooks/useLivePrices'
 
 const EMPTY = {
   symbol: '',
@@ -17,6 +19,7 @@ export default function Investments() {
   const [form, setForm] = useState(EMPTY)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const live = useLivePrices({ enabled: true })
 
   async function load() {
     const data = await api.investments()
@@ -26,6 +29,14 @@ export default function Investments() {
   useEffect(() => {
     load().catch((err) => setError(err.message))
   }, [])
+
+  useEffect(() => {
+    if (live.holdings.length) setItems(live.holdings)
+  }, [live.holdings])
+
+  useEffect(() => {
+    if (live.summary) setUser((u) => (u ? { ...u, cash_balance: live.summary.cash_balance } : u))
+  }, [live.summary, setUser])
 
   async function onAdd(e) {
     e.preventDefault()
@@ -67,8 +78,14 @@ export default function Investments() {
           <h1>Investments</h1>
           <p>Track holdings with cost basis and live mark-to-market value.</p>
         </div>
-        <div style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
-          Cash available: <strong className="mono">{formatUsd(user?.cash_balance)}</strong>
+        <div style={{ textAlign: 'right' }}>
+          <div className="live-pill" style={{ justifyContent: 'flex-end', marginBottom: '0.35rem' }}>
+            <i />
+            Live{live.liveAt ? ` · ${live.liveAt.toLocaleTimeString()}` : ''}
+          </div>
+          <div style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>
+            Cash available: <strong className="mono">{formatUsd(user?.cash_balance)}</strong>
+          </div>
         </div>
       </header>
 
@@ -171,8 +188,12 @@ export default function Investments() {
                   </td>
                   <td className="mono">{h.shares}</td>
                   <td className="mono">{formatUsd(h.avg_cost)}</td>
-                  <td className="mono">{formatUsd(h.current_price)}</td>
-                  <td className="mono">{formatUsd(h.market_value)}</td>
+                  <td>
+                    <LiveValue value={h.current_price} />
+                  </td>
+                  <td>
+                    <LiveValue value={h.market_value} />
+                  </td>
                   <td className={`mono ${h.unrealized_pl >= 0 ? 'delta up' : 'delta down'}`}>
                     {formatUsd(h.unrealized_pl)}
                     <div style={{ fontSize: 12 }}>{formatPct(h.unrealized_pl_pct)}</div>

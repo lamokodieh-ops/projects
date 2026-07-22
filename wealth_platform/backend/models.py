@@ -134,3 +134,13 @@ class PortfolioSnapshot(db.Model):
             "cash_balance": round(self.cash_balance, 2),
             "recorded_at": self.recorded_at.isoformat(),
         }
+
+
+class QuoteCache(db.Model):
+    __tablename__ = "quote_cache"
+
+    symbol = db.Column(db.String(20), primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    source = db.Column(db.String(40), nullable=False, default="unknown")
+    fetched_at = db.Column(db.Integer, nullable=False)

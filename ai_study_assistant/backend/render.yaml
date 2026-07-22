@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ai-study-assistant-api
+    runtime: python
+    rootDir: ai_study_assistant/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --timeout 120
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: LLM_MODE
+        value: auto
+      - key: EMBEDDING_PROVIDER
+        value: auto
+      - key: PYTHON_VERSION
+        value: "3.11.0"

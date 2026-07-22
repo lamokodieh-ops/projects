@@ -11,7 +11,7 @@ Full-stack personal finance app for tracking investments and transactions, with 
 - Investment portfolio with cost basis and unrealized P/L
 - Income & expense transactions
 - Dashboard charts: net-worth trend, allocation, spending by category
-- Live price ticks every 8s (demo market simulation) so trends update in real time
+- **Live mark-to-market** every ~3s (Yahoo last price; Polygon.io as secondary)
 - Indexed SQL queries on `user_id` / `recorded_at` for fast dashboard loads
 
 ## Quick start
@@ -31,8 +31,22 @@ python -m venv .venv
 pip install -r requirements.txt
 copy .env.example .env   # Windows
 # cp .env.example .env   # macOS / Linux
+# Edit .env and set ALPHA_VANTAGE_API_KEY
 python app.py
 ```
+
+### Stock quotes
+
+Set in `backend/.env` (never commit this file):
+
+```env
+POLYGON_API_KEY=your-polygon-key-here
+POLYGON_QUOTE_TTL=120
+EQUITY_QUOTE_TTL=8
+```
+
+Lookup order: **cache** → live market last price → [Polygon](https://polygon.io) previous bar → stale cache.  
+Quotes update continuously while markets are open; after hours you’ll see an accurate last price that stays flat until the next session.
 
 ### 2. Frontend (port 5173)
 
@@ -73,7 +87,7 @@ wealth_platform/
 | POST | `/api/auth/login` | Sign in |
 | GET | `/api/dashboard` | Summary, holdings, recent tx |
 | GET | `/api/trends` | Net-worth series + allocation |
-| POST | `/api/prices/refresh` | Simulate live market tick |
+| POST | `/api/prices/refresh` | Live tick — refresh holdings via Polygon / cache |
 | GET/POST | `/api/investments` | List / buy |
 | GET/POST | `/api/transactions` | List / add |
 

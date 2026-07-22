@@ -1,0 +1,11 @@
+backend/.venv/
+backend/.env
+backend/data/
+backend/__pycache__/
+backend/**/__pycache__/
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+web/
+.DS_Store
+Thumbs.db
