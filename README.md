@@ -5,6 +5,7 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 | Project | Type | Run locally | Live / display |
 |---------|------|-------------|----------------|
 | [InLumine](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | Deploy to [Vercel](https://vercel.com) (see project README) |
+| [Fortis — Wealth Platform](./wealth_platform) | React + Flask + SQL | Backend `python app.py` · Frontend `npm run dev` | See project README (demo: `demo@fortis.app`) |
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | Deploy to [Render](https://render.com) · [Video demo](https://youtu.be/gQS6CYNJGTA) |
 | [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | See README (CLI — not a web app) |
 | [Zen Finance](./archive/finance_web_app) *(archived)* | Flask stock portfolio | Inactive — see archived README | Not deployed |
