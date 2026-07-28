@@ -36,7 +36,7 @@ const Header = () => {
       e.preventDefault()
       window.scrollTo({ top: 0, behavior: 'smooth' })
       // Clear any hash if present
-      window.history.replaceState(null, '', '/')
+      window.history.replaceState(null, '', import.meta.env.BASE_URL)
     }
   }
 

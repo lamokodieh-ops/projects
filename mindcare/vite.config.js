@@ -1,7 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
-export default defineConfig({
+// Production builds target the GitHub Pages gallery path:
+// https://lamokodieh-ops.github.io/projects/mindcare/
+// Local `npm run dev` keeps base `/`.
+export default defineConfig(({ command }) => ({
   plugins: [react()],
-})
+  base: command === 'build' ? '/projects/mindcare/' : '/',
+}))

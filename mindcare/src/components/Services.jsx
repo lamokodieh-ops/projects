@@ -8,7 +8,7 @@ const Services = () => {
     {
       id: "individual",
       title: "Individual Therapy",
-      image: "/individual.png",
+      image: `${import.meta.env.BASE_URL}individual.png`,
       shortDescription: "One-on-one therapy sessions focused on helping individuals explore personal challenges, develop coping strategies, and achieve meaningful personal growth in a supportive, confidential environment.",
       overview: "Individual therapy provides a confidential, one-on-one space to explore personal challenges, gain insight, and develop tools for emotional well-being. Sessions are tailored to your unique goals, experiences, and pace.",
       focusAreas: [
@@ -29,7 +29,7 @@ const Services = () => {
     {
       id: "couples",
       title: "Couples Therapy",
-      image: "/couples.png",
+      image: `${import.meta.env.BASE_URL}couples.png`,
       shortDescription: "Therapy designed to help couples improve communication, resolve conflict, and strengthen emotional connection.",
       overview: "Couples therapy is designed to help partners strengthen communication, rebuild trust, and better understand each other's needs in a supportive and neutral environment.",
       focusAreas: [
@@ -49,7 +49,7 @@ const Services = () => {
     {
       id: "family",
       title: "Family Therapy",
-      image: "/family.png",
+      image: `${import.meta.env.BASE_URL}family.png`,
       shortDescription: "Collaborative therapy focused on improving family dynamics, communication, and mutual understanding.",
       overview: "Family therapy supports families in improving communication, resolving conflict, and strengthening relationships by addressing patterns that affect the entire family system.",
       focusAreas: [
@@ -69,7 +69,7 @@ const Services = () => {
     {
       id: "anxiety",
       title: "Anxiety & Stress Management",
-      image: "/anxiety.png",
+      image: `${import.meta.env.BASE_URL}anxiety.png`,
       shortDescription: "Targeted therapy to help clients manage anxiety, stress, and overwhelm using practical tools and evidence-based approaches.",
       overview: "This service focuses on helping individuals understand and manage anxiety, stress, and overwhelm using practical, evidence-based tools.",
       focusAreas: [
@@ -89,7 +89,7 @@ const Services = () => {
     {
       id: "trauma",
       title: "Trauma-Informed Therapy",
-      image: "/trauma.png",
+      image: `${import.meta.env.BASE_URL}trauma.png`,
       shortDescription: "Specialized therapy designed to help individuals safely process and heal from past trauma.",
       overview: "Trauma-informed therapy provides a safe, supportive space to process and heal from past trauma at a pace that feels right for you.",
       focusAreas: [
@@ -109,7 +109,7 @@ const Services = () => {
     {
       id: "transitions",
       title: "Life Transitions & Personal Growth",
-      image: "/transitions.png",
+      image: `${import.meta.env.BASE_URL}transitions.png`,
       shortDescription: "Therapy to support individuals navigating major life changes, identity exploration, or personal development goals.",
       overview: "This service supports individuals navigating major life changes, identity exploration, or personal development goals.",
       focusAreas: [

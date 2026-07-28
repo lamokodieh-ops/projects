@@ -9,9 +9,12 @@ import FAQ from './pages/FAQ'
 import Contact from './pages/Contact'
 import BookAppointment from './pages/BookAppointment'
 
+// Strip trailing slash — BrowserRouter basename must not end with /
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
+
 function App() {
   return (
-    <Router>
+    <Router basename={basename}>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col">
         <Header />

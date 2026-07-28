@@ -13,6 +13,7 @@ MindCare presents services, practice information, FAQs, and contact options, and
 | **Stack** | React 18 · Vite · React Router · Tailwind CSS |
 | **Pages** | Home, About, FAQ, Contact, Book Appointment |
 | **Run** | `npm install && npm run dev` → http://localhost:5173 |
+| **Live demo** | [Open on GitHub Pages](https://lamokodieh-ops.github.io/projects/mindcare/) — no install required |
 | **Deploy** | Static host (Vercel, Netlify, GitHub Pages, etc.) |
 
 ---
@@ -120,34 +121,50 @@ Service deep links use hashes on the home page (e.g. `/#services-individual`).
 
 ---
 
-## Deploy for display
+## Live demo (GitHub Pages)
+
+A no-setup demo is published with the portfolio gallery:
+
+**https://lamokodieh-ops.github.io/projects/mindcare/**
+
+From the [gallery](https://lamokodieh-ops.github.io/projects/), use **Open demo**.
+
+### Republish after UI changes
+
+From this folder:
+
+```bash
+npm run build:gallery
+```
+
+That builds with the correct `/projects/mindcare/` base path and copies the output into `../docs/mindcare/` (including a `404.html` SPA fallback). Commit and push the `docs/mindcare` update so Pages picks it up.
+
+---
+
+## Deploy elsewhere
 
 This is a **static SPA** after `npm run build`. Any static host works.
 
-### Vercel (recommended)
+> Production `vite build` uses `base: '/projects/mindcare/'` for the gallery. For a root-domain host (Vercel/Netlify at `/`), temporarily set `base: '/'` in `vite.config.js` (or pass `--base /`).
+
+### Vercel
 
 1. Import the `lamokodieh-ops/projects` repo (or a fork).
 2. Set **Root Directory** to `mindcare`.
-3. Build command: `npm run build`
+3. Build command: `npm run build` (set `base` to `/` if deploying at domain root)
 4. Output directory: `dist`
 5. Deploy
-
-For client-side routing on refresh, ensure the host rewrites unknown paths to `index.html` (Vercel does this for Vite/React by default).
 
 ### Netlify
 
 - Base directory: `mindcare`
-- Build: `npm run build`
+- Build: `npm run build` (with `base: '/'` for root deploy)
 - Publish: `dist`
 - Add a `_redirects` file in `public/` if needed:
 
 ```
 /*    /index.html   200
 ```
-
-### GitHub Pages (project site)
-
-Build locally or in CI, then publish the `dist` folder. Configure the Vite `base` option if the site is served under a subpath (e.g. `/projects/mindcare/`).
 
 ---
 
@@ -156,8 +173,9 @@ Build locally or in CI, then publish the `dist` folder. Configure the Vite `base
 | Command | Purpose |
 |---------|---------|
 | `npm run dev` | Vite dev server with HMR |
-| `npm run build` | Production bundle → `dist/` |
+| `npm run build` | Production bundle → `dist/` (gallery base path) |
 | `npm run preview` | Preview the production build |
+| `npm run build:gallery` | Build and copy into `docs/mindcare` for GitHub Pages |
 
 ---
 

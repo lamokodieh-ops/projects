@@ -8,7 +8,7 @@ const Footer = () => {
     if (location.pathname === '/') {
       e.preventDefault()
       window.scrollTo({ top: 0, behavior: 'smooth' })
-      window.history.replaceState(null, '', '/')
+      window.history.replaceState(null, '', import.meta.env.BASE_URL)
     }
   }
 
