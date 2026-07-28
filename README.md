@@ -9,6 +9,7 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 | [Cortex — AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | Mock mode works without OpenAI key |
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | Deploy to [Render](https://render.com) · [Video demo](https://youtu.be/gQS6CYNJGTA) |
 | [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | See README (CLI — not a web app) |
+| [MindCare — Mental Health Services](./mindcare) | React + Vite + Tailwind | `npm install && npm run dev` | Deploy to [Vercel](https://vercel.com) / Netlify (see project README) |
 
 ## Clone
 
