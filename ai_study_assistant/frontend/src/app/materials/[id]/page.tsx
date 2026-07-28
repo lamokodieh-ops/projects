@@ -83,7 +83,7 @@ export default function MaterialWorkspacePage() {
     <main className="shell">
       <header className="topbar">
         <Link href="/" className="brand">
-          Study <span>Assistant</span>
+          Cortex <span>— AI Study Assistant</span>
         </Link>
         <ModeBadge status={status} />
       </header>

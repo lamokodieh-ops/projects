@@ -1,4 +1,4 @@
-# AI Study Assistant
+# Cortex — AI Study Assistant
 
 Next.js + Flask study tool that generates **explanations**, **quizzes**, and **summaries** from your course materials using **retrieval-augmented generation (RAG)** and **streaming** responses.
 

@@ -46,7 +46,7 @@ export default function HomePage() {
     <main className="shell">
       <header className="topbar">
         <div className="brand">
-          Study <span>Assistant</span>
+          Cortex <span>— AI Study Assistant</span>
         </div>
         <ModeBadge status={status} />
       </header>
