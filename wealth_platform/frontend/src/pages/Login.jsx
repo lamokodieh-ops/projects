@@ -41,7 +41,17 @@ export default function Login() {
       <section className="auth-panel">
         <div className="auth-card">
           <h2>{mode === 'login' ? 'Welcome back' : 'Create your vault'}</h2>
-          <p className="lede">Sign in to visualize your portfolio in real time.</p>
+          <p className="lede">
+            Sign in to visualize your portfolio in real time.
+            {import.meta.env.VITE_DEMO === 'true' && (
+              <>
+                {' '}
+                <strong style={{ color: 'var(--brass-bright)' }}>
+                  Gallery demo — any credentials work; try demo@fortis.app / Demo123!
+                </strong>
+              </>
+            )}
+          </p>
 
           <div className="tabs">
             <button

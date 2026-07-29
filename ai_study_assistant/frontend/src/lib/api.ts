@@ -1,3 +1,4 @@
+import { demoApi, isDemo } from "./demoStore";
 import type { Generation, LlmStatus, Material } from "./types";
 
 // Hit Flask directly so SSE streaming is not buffered by the Next rewrite proxy.
@@ -13,14 +14,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function getHealth() {
+  if (isDemo) return demoApi.getHealth();
   return request<{ ok: boolean } & LlmStatus>("/api/health");
 }
 
 export function listMaterials() {
+  if (isDemo) return demoApi.listMaterials();
   return request<{ materials: Material[] } & LlmStatus>("/api/materials");
 }
 
 export function getMaterial(id: number) {
+  if (isDemo) return demoApi.getMaterial(id);
   return request<{ material: Material; generations: Generation[] } & LlmStatus>(
     `/api/materials/${id}`,
   );
@@ -31,6 +35,7 @@ export async function createMaterial(input: {
   text?: string;
   file?: File | null;
 }) {
+  if (isDemo) return demoApi.createMaterial(input);
   if (input.file) {
     const form = new FormData();
     form.append("file", input.file);
@@ -56,6 +61,7 @@ export type StreamHandlers = {
 };
 
 export function startQuiz(materialId: number) {
+  if (isDemo) return demoApi.startQuiz(materialId);
   return request<{
     session_id: number;
     questions: { index: number; prompt: string; hint?: string | null }[];
@@ -69,6 +75,7 @@ export function startQuiz(materialId: number) {
 }
 
 export function gradeQuizAnswer(body: { session_id: number; index: number; answer: string }) {
+  if (isDemo) return demoApi.gradeQuizAnswer(body);
   return request<
     {
       index: number;
@@ -89,6 +96,8 @@ export async function streamGenerate(
   handlers: StreamHandlers,
   signal?: AbortSignal,
 ) {
+  if (isDemo) return demoApi.streamGenerate(body, handlers, signal);
+
   const res = await fetch(`${BASE}/api/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },

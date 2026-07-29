@@ -1,8 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+// Gallery builds use base /projects/fortis/ (see npm run build:gallery).
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  base: mode === 'gallery' ? '/projects/fortis/' : '/',
   server: {
     port: 5173,
     proxy: {
@@ -12,4 +14,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))

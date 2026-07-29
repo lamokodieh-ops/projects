@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InLumine — Demo notes</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a222c;
+      --text: #e8eaed;
+      --muted: #9aa3ad;
+      --accent: #5b9fd4;
+      --line: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(ellipse at top, #1a2836 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+    a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    h1 { margin: 0 0 0.4rem; font-weight: 600; }
+    .lede { color: var(--muted); margin: 0 0 1.25rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.2rem 1.3rem;
+      margin-bottom: 1rem;
+    }
+    code { background: rgba(255,255,255,0.06); padding: 0.1rem 0.35rem; border-radius: 4px; }
+    .links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p><a href="../">← Gallery</a></p>
+    <h1>InLumine</h1>
+    <p class="lede">
+      PRESEC alumni platform (Next.js + Prisma + NextAuth). It needs a real server and database,
+      so GitHub Pages cannot host a full live app.
+    </p>
+    <div class="card">
+      <strong>Fastest way to try it</strong>
+      <p style="color:var(--muted);margin:0.5rem 0 0">
+        Clone the monorepo, then in <code>inlumine</code>:
+      </p>
+      <pre style="margin:0.75rem 0 0;white-space:pre-wrap;color:#c9d4df">npm install
+npm run db:setup
+npm run dev</pre>
+      <p style="color:var(--muted);margin:0.75rem 0 0">
+        Demo alumni login is documented in the project README (prefilled on the login page).
+      </p>
+    </div>
+    <div class="card">
+      <strong>Public hosted demo</strong>
+      <p style="color:var(--muted);margin:0.5rem 0 0">
+        Deploy to Vercel + Postgres (Neon/Supabase) using the project README.
+        After you have a URL, we can link <em>Open demo</em> from the gallery to that deployment.
+      </p>
+    </div>
+    <div class="links">
+      <a href="https://github.com/lamokodieh-ops/projects/tree/main/inlumine">Source</a>
+      <a href="https://github.com/lamokodieh-ops/projects/blob/main/inlumine/README.md">Run / deploy</a>
+    </div>
+  </main>
+</body>
+</html>

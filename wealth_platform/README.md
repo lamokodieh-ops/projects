@@ -5,6 +5,9 @@ Full-stack personal finance app for tracking investments and transactions, with 
 **Stack:** React (Vite) · Flask · SQL (SQLite / SQLAlchemy) · Recharts  
 **Design:** UI system inspired by Figma wireframes (overview, holdings, cash flow)
 
+**Live gallery demo (no setup):** https://lamokodieh-ops.github.io/projects/fortis/  
+Browser mock of the UI — sign in with any credentials (or `demo@fortis.app` / `Demo123!`). Republish with `cd frontend && npm run build:gallery`.
+
 ## Features
 
 - Auth (register / login) with JWT

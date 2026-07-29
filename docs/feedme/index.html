@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FeedMe — Demo</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --card: #1a222c;
+      --text: #e8eaed;
+      --muted: #9aa3ad;
+      --accent: #5b9fd4;
+      --line: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(ellipse at top, #1a2836 0%, var(--bg) 55%);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    main { max-width: 880px; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+    a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    h1 { margin: 0 0 0.4rem; font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.1rem); }
+    .lede { color: var(--muted); margin: 0 0 1.5rem; max-width: 40rem; }
+    .video {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--card);
+      margin-bottom: 1.25rem;
+    }
+    .video iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
+    .note {
+      margin-top: 1.5rem;
+      padding: 1rem 1.1rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p><a href="../">← Gallery</a></p>
+    <h1>FeedMe — Harvard Meal Planner</h1>
+    <p class="lede">
+      Flask + SQLite app for weekly meal planning with HUDS menus.
+      The full app needs a Python host, so this page opens the recorded demo with no setup.
+    </p>
+    <div class="video">
+      <iframe
+        src="https://www.youtube.com/embed/gQS6CYNJGTA"
+        title="FeedMe video demo"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    </div>
+    <div class="links">
+      <a href="https://youtu.be/gQS6CYNJGTA">Open on YouTube</a>
+      <a href="https://github.com/lamokodieh-ops/projects/tree/main/harvard_meal_planner_website">Source</a>
+      <a href="https://github.com/lamokodieh-ops/projects/blob/main/harvard_meal_planner_website/README.md">Run / deploy</a>
+    </div>
+    <p class="note">
+      To run the live Flask app locally: clone the repo, then
+      <code>pip install -r requirements.txt && python app.py</code>
+      inside <code>harvard_meal_planner_website</code>.
+    </p>
+  </main>
+</body>
+</html>

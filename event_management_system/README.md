@@ -48,13 +48,11 @@ gcc -Wall -Wextra -o event_manager event_manager.c
 
 ## Display / demo notes
 
-This is a **CLI app**, not a website. GitHub Pages cannot run it.
+This is a **CLI app**, not a website. GitHub Pages cannot run the C binary.
 
-For portfolio display:
+**Browser recreation (no setup):** https://lamokodieh-ops.github.io/projects/event_manager/
 
-1. Record a short terminal demo (GIF or Loom)
-2. Link that recording from your resume / gallery page
-3. Reviewers can clone and run locally with the commands above
+That page mirrors the menu flow in JavaScript with `localStorage` (not the compiled program). Reviewers can still clone and run the real C app with the commands above.
 
 ## Clean build artifacts
 

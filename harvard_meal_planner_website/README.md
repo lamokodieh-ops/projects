@@ -2,6 +2,8 @@
 
 #### Video Demo: https://youtu.be/gQS6CYNJGTA
 
+**Gallery demo page (no setup):** https://lamokodieh-ops.github.io/projects/feedme/
+
 ## What is FeedMe?
 
 FeedMe is a web application designed for Harvard students to plan, organize, and track their meals throughout the week. The app integrates with Harvard University Dining Services (HUDS) menus, allowing you to browse what's being served at Annenberg dining hall and add those items directly to your personal meal plan.

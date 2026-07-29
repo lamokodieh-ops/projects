@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Management System — Browser Demo</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --text: #d7e0ea;
+      --muted: #8b98a8;
+      --accent: #6ecf9a;
+      --line: rgba(255,255,255,0.1);
+      --warn: #e0b36a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      background: radial-gradient(ellipse at top, #16233a 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    a { color: #7eb6e8; }
+    h1 { font-family: "Segoe UI", system-ui, sans-serif; font-size: 1.35rem; margin: 0 0 0.35rem; }
+    .lede { font-family: "Segoe UI", system-ui, sans-serif; color: var(--muted); font-size: 0.92rem; margin: 0 0 1rem; }
+    .banner {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 0.8rem;
+      color: var(--warn);
+      border: 1px solid rgba(224,179,106,0.35);
+      background: rgba(224,179,106,0.08);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .term {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1rem 1.1rem;
+      min-height: 420px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    }
+    .out {
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin: 0 0 1rem;
+      min-height: 260px;
+    }
+    .row { display: flex; gap: 0.5rem; }
+    input {
+      flex: 1;
+      background: #0c1322;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font: inherit;
+    }
+    button {
+      background: #1d3b2f;
+      color: var(--accent);
+      border: 1px solid rgba(110,207,154,0.35);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.08); }
+    .links { font-family: "Segoe UI", system-ui, sans-serif; margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p style="font-family:Segoe UI,system-ui,sans-serif;margin:0 0 0.75rem"><a href="../">← Gallery</a></p>
+    <h1>Event Management System</h1>
+    <p class="lede">Browser recreation of the C CLI menus. Data stays in this browser (localStorage).</p>
+    <p class="banner">Demo mode — not the compiled C binary. Clone the repo to run the real program.</p>
+    <div class="term">
+      <pre class="out" id="out"></pre>
+      <form class="row" id="form">
+        <input id="input" autocomplete="off" spellcheck="false" placeholder="Type a choice…" />
+        <button type="submit">Enter</button>
+      </form>
+    </div>
+    <div class="links">
+      <a href="https://github.com/lamokodieh-ops/projects/tree/main/event_management_system">Source</a>
+      <a href="https://github.com/lamokodieh-ops/projects/blob/main/event_management_system/README.md">Build &amp; run</a>
+    </div>
+  </main>
+  <script>
+    const KEY_USER = 'ems_demo_user'
+    const KEY_EVENTS = 'ems_demo_events'
+    const out = document.getElementById('out')
+    const form = document.getElementById('form')
+    const input = document.getElementById('input')
+
+    let mode = 'boot' // boot | login_user | login_pass | create_user | create_pass | menu | add_* | ...
+    let draft = {}
+    let buffer = []
+
+    function loadUser() {
+      try { return JSON.parse(localStorage.getItem(KEY_USER) || 'null') } catch { return null }
+    }
+    function saveUser(u) { localStorage.setItem(KEY_USER, JSON.stringify(u)) }
+    function loadEvents() {
+      try { return JSON.parse(localStorage.getItem(KEY_EVENTS) || '[]') } catch { return [] }
+    }
+    function saveEvents(e) { localStorage.setItem(KEY_EVENTS, JSON.stringify(e)) }
+
+    function print(text = '') { buffer.push(text); out.textContent = buffer.join('\n') }
+    function clear() { buffer = []; out.textContent = '' }
+
+    function showMenu() {
+      mode = 'menu'
+      print('')
+      print('===== EVENT MANAGER =====')
+      print('0. Exit')
+      print('1. Add event')
+      print('2. View all events')
+      print('3. Filter by category')
+      print('4. Filter by date')
+      print('5. Delete event')
+      print('6. Upcoming (next 30 days)')
+      print('')
+      print('Select option:')
+    }
+
+    function boot() {
+      clear()
+      print('Event Management System (browser demo)')
+      print('--------------------------------------')
+      const user = loadUser()
+      if (!user) {
+        print('No account found. Create one.')
+        print('Enter a username:')
+        mode = 'create_user'
+      } else {
+        print('Login required.')
+        print('Username:')
+        mode = 'login_user'
+      }
+    }
+
+    function addEventFlow(step, value) {
+      if (step === 'name') {
+        draft = { name: value }
+        print('Type (birthday/anniversary/other):')
+        mode = 'add_type'
+      } else if (step === 'type') {
+        draft.type = value || 'other'
+        print('Category (friend/family/work/other):')
+        mode = 'add_cat'
+      } else if (step === 'cat') {
+        draft.category = value || 'other'
+        print('Year (YYYY):')
+        mode = 'add_year'
+      } else if (step === 'year') {
+        draft.year = Number(value)
+        print('Month (1-12):')
+        mode = 'add_month'
+      } else if (step === 'month') {
+        draft.month = Number(value)
+        print('Day (1-31):')
+        mode = 'add_day'
+      } else if (step === 'day') {
+        draft.day = Number(value)
+        const events = loadEvents()
+        events.push({ ...draft, id: Date.now() })
+        saveEvents(events)
+        print(`Saved event: ${draft.name}`)
+        showMenu()
+      }
+    }
+
+    function handle(value) {
+      const v = value.trim()
+      print(`> ${v}`)
+
+      if (mode === 'create_user') {
+        draft = { username: v }
+        print('Enter a password:')
+        mode = 'create_pass'
+        return
+      }
+      if (mode === 'create_pass') {
+        saveUser({ username: draft.username, password: v })
+        print('Account created. Log in.')
+        print('Username:')
+        mode = 'login_user'
+        return
+      }
+      if (mode === 'login_user') {
+        draft = { username: v }
+        print('Password:')
+        mode = 'login_pass'
+        return
+      }
+      if (mode === 'login_pass') {
+        const user = loadUser()
+        if (user && user.username === draft.username && user.password === v) {
+          print('Login successful.')
+          showMenu()
+        } else {
+          print('Invalid credentials. Username:')
+          mode = 'login_user'
+        }
+        return
+      }
+
+      if (mode === 'menu') {
+        if (v === '0') { print('Goodbye.'); mode = 'done'; return }
+        if (v === '1') { print('Event name:'); mode = 'add_name'; return }
+        if (v === '2') {
+          const events = loadEvents()
+          if (!events.length) print('(no events)')
+          events.forEach((e, i) => print(`${i + 1}. ${e.year}-${e.month}-${e.day} | ${e.type} | ${e.category} | ${e.name}`))
+          showMenu(); return
+        }
+        if (v === '3') { print('Category to filter:'); mode = 'filter_cat'; return }
+        if (v === '4') { print('Date YYYY-M-D:'); mode = 'filter_date'; return }
+        if (v === '5') {
+          const events = loadEvents()
+          events.forEach((e, i) => print(`${i + 1}. ${e.name}`))
+          print('Number to delete:')
+          mode = 'delete'
+          return
+        }
+        if (v === '6') {
+          const now = new Date()
+          const soon = new Date(now); soon.setDate(soon.getDate() + 30)
+          const events = loadEvents().filter((e) => {
+            const d = new Date(e.year, e.month - 1, e.day)
+            return d >= now && d <= soon
+          })
+          if (!events.length) print('(none in next 30 days)')
+          events.forEach((e) => print(`${e.year}-${e.month}-${e.day} | ${e.name}`))
+          showMenu(); return
+        }
+        print('Invalid option.')
+        showMenu()
+        return
+      }
+
+      if (mode === 'add_name') return addEventFlow('name', v)
+      if (mode === 'add_type') return addEventFlow('type', v)
+      if (mode === 'add_cat') return addEventFlow('cat', v)
+      if (mode === 'add_year') return addEventFlow('year', v)
+      if (mode === 'add_month') return addEventFlow('month', v)
+      if (mode === 'add_day') return addEventFlow('day', v)
+
+      if (mode === 'filter_cat') {
+        loadEvents().filter((e) => e.category.toLowerCase() === v.toLowerCase())
+          .forEach((e) => print(`${e.year}-${e.month}-${e.day} | ${e.name}`))
+        showMenu(); return
+      }
+      if (mode === 'filter_date') {
+        const [y, m, d] = v.split(/[-/]/).map(Number)
+        loadEvents().filter((e) => e.year === y && e.month === m && e.day === d)
+          .forEach((e) => print(`${e.name} (${e.type})`))
+        showMenu(); return
+      }
+      if (mode === 'delete') {
+        const events = loadEvents()
+        const idx = Number(v) - 1
+        if (idx >= 0 && idx < events.length) {
+          print(`Deleted ${events[idx].name}`)
+          events.splice(idx, 1)
+          saveEvents(events)
+        } else print('Invalid number.')
+        showMenu()
+      }
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      if (mode === 'done') return
+      const v = input.value
+      input.value = ''
+      handle(v)
+      input.focus()
+    })
+
+    boot()
+    input.focus()
+  </script>
+</body>
+</html>

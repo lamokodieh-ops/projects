@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import ModeBadge from "@/components/ModeBadge";
 import { createMaterial, getHealth, listMaterials } from "@/lib/api";
 import type { LlmStatus, Material } from "@/lib/types";
 
 export default function HomePage() {
+  const router = useRouter();
   const [status, setStatus] = useState<LlmStatus | null>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [title, setTitle] = useState("");
@@ -34,7 +36,7 @@ export default function HomePage() {
       setTitle("");
       setText("");
       setFile(null);
-      window.location.href = `/materials/${res.material.id}`;
+      router.push(`/materials/${res.material.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

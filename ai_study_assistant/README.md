@@ -4,6 +4,9 @@ Next.js + Flask study tool that generates **explanations**, **quizzes**, and **s
 
 Built to mirror a fellowship evaluation lens: grounded generation, inspectable sources, low-latency interaction.
 
+**Live gallery demo (no setup):** https://lamokodieh-ops.github.io/projects/cortex/  
+Static Next export with in-browser mock RAG/streaming (no Flask, no API key). Republish with `cd frontend && npm run build:gallery`.
+
 ## Stack
 
 - **Frontend:** Next.js (App Router)

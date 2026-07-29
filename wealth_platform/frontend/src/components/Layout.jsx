@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { isDemo } from '../api'
 import { useAuth } from '../AuthContext'
 
 export default function Layout() {
@@ -10,6 +11,11 @@ export default function Layout() {
         <div className="logo">
           Fort<span>is</span>
         </div>
+        {isDemo && (
+          <p className="demo-banner" title="Static gallery build — data is simulated in the browser">
+            Demo mode · simulated data
+          </p>
+        )}
         <nav>
           <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
             Overview

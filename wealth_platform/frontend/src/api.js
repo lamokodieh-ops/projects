@@ -1,3 +1,5 @@
+import { demoApi, isDemo } from './demoStore'
+
 const TOKEN_KEY = 'fortis_token'
 
 export function getToken() {
@@ -28,7 +30,7 @@ async function request(path, options = {}) {
   return data
 }
 
-export const api = {
+const liveApi = {
   register: (body) => request('/api/auth/register', { method: 'POST', body: JSON.stringify(body) }),
   login: (body) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
   me: () => request('/api/auth/me'),
@@ -45,6 +47,9 @@ export const api = {
     request('/api/transactions', { method: 'POST', body: JSON.stringify(body) }),
   deleteTransaction: (id) => request(`/api/transactions/${id}`, { method: 'DELETE' }),
 }
+
+export const api = isDemo ? demoApi : liveApi
+export { isDemo }
 
 export function formatUsd(n) {
   return new Intl.NumberFormat('en-US', {
