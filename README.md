@@ -11,6 +11,7 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 | [InLumine](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | [Demo notes](https://lamokodieh-ops.github.io/projects/inlumine/) (full app needs Vercel + DB) |
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | [Video demo page](https://lamokodieh-ops.github.io/projects/feedme/) |
 | [Cortex — AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/cortex/) (browser mock) |
+| [Quirkly — Personality-aware Habits](./quirkly) | React + Vite + Router | `npm install && npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/quirkly/) (seeded demo) |
 | [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | [Browser CLI demo](https://lamokodieh-ops.github.io/projects/event_manager/) |
 
 ## Clone
@@ -38,6 +39,7 @@ https://lamokodieh-ops.github.io/projects/
 | MindCare | `cd mindcare && npm run build:gallery` |
 | Fortis | `cd wealth_platform/frontend && npm run build:gallery` |
 | Cortex | `cd ai_study_assistant/frontend && npm run build:gallery` |
+| Quirkly | `cd quirkly && npm run build:gallery` |
 
 Then commit the updated `docs/<name>` folder and push.
 
