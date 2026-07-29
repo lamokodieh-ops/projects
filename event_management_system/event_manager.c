@@ -341,7 +341,7 @@ int main(){
 
     int choice;
     do{
-        printf("\n\nEvent Management System\n1. Add event\n2. Edit event\n3. Delete event\n4. Display events by category\n5. Display events by date\n6. Display recent and upcoming events\n0. Save and Exit\n");
+        printf("\n\nKairos — Personal Event Tracker\n1. Add event\n2. Edit event\n3. Delete event\n4. Display events by category\n5. Display events by date\n6. Display recent and upcoming events\n0. Save and Exit\n");
         printf("Enter command: ");
         scanf("%d", &choice);
         getchar();//getchar() is used after scanf to clear the new line character in the buffer to prevent errors when fgets is used
@@ -369,7 +369,7 @@ int main(){
             display_recent(events);
             break;
         case 0:
-            printf("\nThank you for using the Event Management System\nExiting...\n");
+            printf("\nThanks for using Kairos.\nExiting...\n");
             save_database(events);
             free_events(events);
             break;

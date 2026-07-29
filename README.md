@@ -12,7 +12,7 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | [Video demo page](https://lamokodieh-ops.github.io/projects/feedme/) |
 | [Cortex — AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/cortex/) (browser mock) |
 | [Quirkly — Personality-aware Habits](./quirkly) | React + Vite + Router | `npm install && npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/quirkly/) (seeded demo) |
-| [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | [Browser CLI demo](https://lamokodieh-ops.github.io/projects/event_manager/) |
+| [Kairos — Personal Event Tracker](./event_management_system) | C terminal app | `make && ./event_manager` | [Browser CLI demo](https://lamokodieh-ops.github.io/projects/event_manager/) |
 | [Merit — Course & GPA Tracker](./merit) | C++17 terminal app | `make && ./merit` | [Browser CLI demo](https://lamokodieh-ops.github.io/projects/merit/) |
 
 ## Clone

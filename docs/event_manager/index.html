@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Event Management System — Browser Demo</title>
+  <title>Kairos — Browser Demo</title>
   <style>
     :root {
       --bg: #0b1220;
@@ -77,7 +77,7 @@
 <body>
   <main>
     <p style="font-family:Segoe UI,system-ui,sans-serif;margin:0 0 0.75rem"><a href="../">← Gallery</a></p>
-    <h1>Event Management System</h1>
+    <h1>Kairos — Personal Event Tracker</h1>
     <p class="lede">Browser recreation of the C CLI menus. Data stays in this browser (localStorage).</p>
     <p class="banner">Demo mode — not the compiled C binary. Clone the repo to run the real program.</p>
     <div class="term">
@@ -118,7 +118,7 @@
     function showMenu() {
       mode = 'menu'
       print('')
-      print('===== EVENT MANAGER =====')
+      print('===== KAIROS =====')
       print('0. Exit')
       print('1. Add event')
       print('2. View all events')
@@ -132,8 +132,8 @@
 
     function boot() {
       clear()
-      print('Event Management System (browser demo)')
-      print('--------------------------------------')
+      print('Kairos — Personal Event Tracker (browser demo)')
+      print('--------------------------------------------')
       const user = loadUser()
       if (!user) {
         print('No account found. Create one.')

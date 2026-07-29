@@ -1,4 +1,4 @@
-# Event Management System
+# Kairos — Personal Event Tracker
 
 A menu-driven **C** terminal application for managing personal events (birthdays, anniversaries, and more) with simple file-based persistence.
 
@@ -61,3 +61,7 @@ make clean
 ```
 
 Generated files (`*.bin`, `event_manager`, `*.exe`) are gitignored.
+
+---
+
+Part of the [lamokodieh-ops/projects](https://github.com/lamokodieh-ops/projects) portfolio.
