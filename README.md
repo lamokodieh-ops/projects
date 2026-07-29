@@ -6,12 +6,12 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 
 | Project | Type | Run locally | Open without setup |
 |---------|------|-------------|--------------------|
-| [InLumine](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | [Demo notes](https://lamokodieh-ops.github.io/projects/inlumine/) (full app needs Vercel + DB) |
-| [Fortis — Wealth Platform](./wealth_platform) | React + Flask + SQL | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/fortis/) (browser mock) |
-| [Cortex — AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/cortex/) (browser mock) |
-| [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | [Video demo page](https://lamokodieh-ops.github.io/projects/feedme/) |
-| [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | [Browser CLI demo](https://lamokodieh-ops.github.io/projects/event_manager/) |
 | [MindCare — Mental Health Services](./mindcare) | React + Vite + Tailwind | `npm install && npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/mindcare/) |
+| [Fortis — Wealth Platform](./wealth_platform) | React + Flask + SQL | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/fortis/) (browser mock) |
+| [InLumine](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | [Demo notes](https://lamokodieh-ops.github.io/projects/inlumine/) (full app needs Vercel + DB) |
+| [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | [Video demo page](https://lamokodieh-ops.github.io/projects/feedme/) |
+| [Cortex — AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/cortex/) (browser mock) |
+| [Event Management System](./event_management_system) | C terminal app | `make && ./event_manager` | [Browser CLI demo](https://lamokodieh-ops.github.io/projects/event_manager/) |
 
 ## Clone
 
