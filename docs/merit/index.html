@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Merit — Browser Demo</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --text: #d7e0ea;
+      --muted: #8b98a8;
+      --accent: #7eb6e8;
+      --line: rgba(255,255,255,0.1);
+      --warn: #e0b36a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      background: radial-gradient(ellipse at top, #16233a 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 2rem 1rem 3rem; }
+    a { color: #7eb6e8; }
+    h1 { font-family: "Segoe UI", system-ui, sans-serif; font-size: 1.35rem; margin: 0 0 0.35rem; }
+    .lede { font-family: "Segoe UI", system-ui, sans-serif; color: var(--muted); font-size: 0.92rem; margin: 0 0 1rem; }
+    .banner {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 0.8rem;
+      color: var(--warn);
+      border: 1px solid rgba(224,179,106,0.35);
+      background: rgba(224,179,106,0.08);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .term {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1rem 1.1rem;
+      min-height: 420px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    }
+    .out {
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin: 0 0 1rem;
+      min-height: 280px;
+    }
+    .row { display: flex; gap: 0.5rem; }
+    input {
+      flex: 1;
+      background: #0c1322;
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font: inherit;
+    }
+    button {
+      background: #1a2f45;
+      color: var(--accent);
+      border: 1px solid rgba(126,182,232,0.35);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover { filter: brightness(1.08); }
+    .links { font-family: "Segoe UI", system-ui, sans-serif; margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <p style="font-family:Segoe UI,system-ui,sans-serif;margin:0 0 0.75rem"><a href="../">← Gallery</a></p>
+    <h1>Merit — Course &amp; GPA Tracker</h1>
+    <p class="lede">Browser recreation of the C++ CLI menus. Data stays in this browser (localStorage).</p>
+    <p class="banner">Demo mode — not the compiled C++ binary. Clone the repo to run the real program.</p>
+    <div class="term">
+      <pre class="out" id="out"></pre>
+      <form class="row" id="form">
+        <input id="input" autocomplete="off" spellcheck="false" placeholder="Type a choice…" />
+        <button type="submit">Enter</button>
+      </form>
+    </div>
+    <div class="links">
+      <a href="https://github.com/lamokodieh-ops/projects/tree/main/merit">Source</a>
+      <a href="https://github.com/lamokodieh-ops/projects/blob/main/merit/README.md">Build &amp; run</a>
+    </div>
+  </main>
+  <script>
+    const KEY = 'merit_demo_v1'
+    const out = document.getElementById('out')
+    const form = document.getElementById('form')
+    const input = document.getElementById('input')
+
+    let mode = 'menu'
+    let draft = {}
+    let courseIdx = -1
+    let buffer = []
+    let dirty = false
+
+    function load() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(KEY) || 'null')
+        if (raw && Array.isArray(raw.courses)) return raw
+      } catch {}
+      return {
+        courses: [
+          {
+            name: 'CS 101 - Intro to Programming',
+            credits: 3,
+            grades: [
+              { name: 'Homework 1', earned: 92, possible: 100, weight: 1 },
+              { name: 'Midterm', earned: 88, possible: 100, weight: 2 },
+              { name: 'Final Project', earned: 95, possible: 100, weight: 2 }
+            ]
+          },
+          {
+            name: 'MATH 201 - Calculus II',
+            credits: 4,
+            grades: [
+              { name: 'Quiz 1', earned: 18, possible: 20, weight: 1 },
+              { name: 'Exam 1', earned: 84, possible: 100, weight: 1 }
+            ]
+          }
+        ]
+      }
+    }
+
+    function save(state) {
+      localStorage.setItem(KEY, JSON.stringify(state))
+    }
+
+    let state = load()
+
+    function print(text = '') { buffer.push(text); out.textContent = buffer.join('\n') }
+    function clear() { buffer = []; out.textContent = '' }
+
+    function pct(g) {
+      if (!g.possible) return 0
+      return (g.earned / g.possible) * 100
+    }
+
+    function courseAvg(c) {
+      if (!c.grades.length) return 0
+      const weighted = c.grades.some((g) => Math.abs((g.weight || 1) - 1) > 0.0001)
+      if (!weighted) {
+        return c.grades.reduce((s, g) => s + pct(g), 0) / c.grades.length
+      }
+      let num = 0, den = 0
+      for (const g of c.grades) {
+        const w = g.weight || 1
+        num += pct(g) * w
+        den += w
+      }
+      return den ? num / den : 0
+    }
+
+    function letter(p) {
+      if (p >= 97) return 'A+'
+      if (p >= 93) return 'A'
+      if (p >= 90) return 'A-'
+      if (p >= 87) return 'B+'
+      if (p >= 83) return 'B'
+      if (p >= 80) return 'B-'
+      if (p >= 77) return 'C+'
+      if (p >= 73) return 'C'
+      if (p >= 70) return 'C-'
+      if (p >= 67) return 'D+'
+      if (p >= 63) return 'D'
+      if (p >= 60) return 'D-'
+      return 'F'
+    }
+
+    function gpaPts(p) {
+      if (p >= 93) return 4.0
+      if (p >= 90) return 3.7
+      if (p >= 87) return 3.3
+      if (p >= 83) return 3.0
+      if (p >= 80) return 2.7
+      if (p >= 77) return 2.3
+      if (p >= 73) return 2.0
+      if (p >= 70) return 1.7
+      if (p >= 67) return 1.3
+      if (p >= 63) return 1.0
+      if (p >= 60) return 0.7
+      return 0.0
+    }
+
+    function overallGPA() {
+      let qp = 0, credits = 0
+      for (const c of state.courses) {
+        if (!c.grades.length) continue
+        const avg = courseAvg(c)
+        qp += gpaPts(avg) * c.credits
+        credits += c.credits
+      }
+      return credits ? qp / credits : 0
+    }
+
+    function listCourses() {
+      if (!state.courses.length) {
+        print('No courses added yet. Add a course to get started!')
+        return
+      }
+      print('Your Courses')
+      print('------------')
+      state.courses.forEach((c, i) => {
+        let line = `${i + 1}. ${c.name} (${c.credits} credits, ${c.grades.length} grades)`
+        if (c.grades.length) {
+          const avg = courseAvg(c)
+          line += ` - Average: ${avg.toFixed(2)}%, GPA: ${gpaPts(avg).toFixed(2)}`
+        }
+        print(line)
+      })
+    }
+
+    function showMain() {
+      mode = 'menu'
+      courseIdx = -1
+      clear()
+      print('Merit — Course & GPA Tracker  v1.0.0')
+      print('Track courses, assignments, and credit-weighted GPA.')
+      print('----------------------------------------------------')
+      if (dirty) print('[!] You have unsaved changes')
+      print('')
+      print('Main Menu')
+      print('---------')
+      print('1. View All Courses')
+      print('2. Add New Course')
+      print('3. Select Course (Manage Grades)')
+      print('4. Delete Course')
+      print('5. View GPA Summary')
+      print('6. View Detailed Report')
+      print('7. Save Data')
+      print('0. Exit')
+      print('')
+      print('Enter your choice:')
+    }
+
+    function showCourseMenu() {
+      const c = state.courses[courseIdx]
+      mode = 'course_menu'
+      clear()
+      print(`Course: ${c.name}`)
+      print('-------')
+      print('1. View All Grades')
+      print('2. Add New Grade')
+      print('3. Delete Grade')
+      print('4. View Course Summary')
+      print('0. Back to Main Menu')
+      print('')
+      print('Enter your choice:')
+    }
+
+    function showGPA() {
+      print('')
+      print('GPA Calculation Breakdown')
+      print('-------------------------')
+      let qp = 0, credits = 0
+      if (!state.courses.length) {
+        print('No courses to calculate GPA.')
+        return
+      }
+      for (const c of state.courses) {
+        if (!c.grades.length) {
+          print(`${c.name} (${c.credits} credits) - No grades recorded`)
+          continue
+        }
+        const avg = courseAvg(c)
+        const pts = gpaPts(avg)
+        const quality = pts * c.credits
+        qp += quality
+        credits += c.credits
+        print(`${c.name} (${c.credits} credits): ${avg.toFixed(2)}% (${letter(avg)}) - GPA: ${pts.toFixed(2)}, Quality Points: ${quality.toFixed(2)}`)
+      }
+      print('')
+      print(`Total Credits: ${credits}, Total Quality Points: ${qp.toFixed(2)}`)
+      print(`Overall GPA: ${overallGPA().toFixed(2)} / 4.00`)
+    }
+
+    function handle(value) {
+      const v = value.trim()
+      print(`> ${v}`)
+
+      if (mode === 'done') return
+
+      if (mode === 'menu') {
+        if (v === '1') { print(''); listCourses(); print(''); print('Press Enter to continue...'); mode = 'pause_main'; return }
+        if (v === '2') { print('Enter course name:'); mode = 'add_course_name'; return }
+        if (v === '3') {
+          if (!state.courses.length) { print('No courses available. Please add a course first.'); print('Press Enter...'); mode = 'pause_main'; return }
+          print(''); listCourses(); print(''); print('Enter course number (0 to cancel):'); mode = 'select_course'; return
+        }
+        if (v === '4') {
+          if (!state.courses.length) { print('No courses to delete.'); print('Press Enter...'); mode = 'pause_main'; return }
+          print(''); listCourses(); print(''); print('Enter course number to delete (0 to cancel):'); mode = 'delete_course'; return
+        }
+        if (v === '5') { showGPA(); print(''); print('Press Enter to continue...'); mode = 'pause_main'; return }
+        if (v === '6') {
+          print(''); print('Detailed Grade Report'); print('---------------------')
+          state.courses.forEach((c) => {
+            print(''); print(`Course: ${c.name}`); print(`Credit Hours: ${c.credits}`)
+            if (!c.grades.length) print('No grades recorded yet.')
+            else c.grades.forEach((g, i) => print(`${i + 1}. ${g.name}: ${g.earned}/${g.possible} (${pct(g).toFixed(2)}%) [Weight: ${g.weight}]`))
+            const avg = courseAvg(c)
+            print(`Course Average: ${avg.toFixed(2)}% | ${letter(avg)} | GPA ${gpaPts(avg).toFixed(2)}`)
+          })
+          showGPA()
+          print(''); print('Press Enter to continue...'); mode = 'pause_main'; return
+        }
+        if (v === '7') {
+          save(state); dirty = false
+          print('Data saved successfully (browser localStorage).')
+          print('Press Enter...'); mode = 'pause_main'; return
+        }
+        if (v === '0') {
+          if (dirty) { print('You have unsaved changes. Save first? (y/n)'); mode = 'exit_save'; return }
+          print('Thanks for using Merit. Goodbye.'); mode = 'done'; return
+        }
+        print('Invalid option.')
+        print('Press Enter...'); mode = 'pause_main'
+        return
+      }
+
+      if (mode === 'pause_main') { showMain(); return }
+      if (mode === 'pause_course') { showCourseMenu(); return }
+
+      if (mode === 'exit_save') {
+        if (v.toLowerCase() === 'y') { save(state); dirty = false; print('Saved.') }
+        print('Thanks for using Merit. Goodbye.'); mode = 'done'; return
+      }
+
+      if (mode === 'add_course_name') {
+        if (!v) { print('Name cannot be empty. Enter course name:'); return }
+        if (state.courses.some((c) => c.name.toLowerCase() === v.toLowerCase())) {
+          print('A course with this name already exists.'); print('Press Enter...'); mode = 'pause_main'; return
+        }
+        draft = { name: v }
+        print('Enter credit hours (1-6):'); mode = 'add_course_credits'; return
+      }
+
+      if (mode === 'add_course_credits') {
+        const credits = Number(v)
+        if (!Number.isInteger(credits) || credits < 1 || credits > 6) {
+          print('Enter a number between 1 and 6:'); return
+        }
+        state.courses.push({ name: draft.name, credits, grades: [] })
+        dirty = true
+        print(`Course '${draft.name}' added successfully!`)
+        print('Press Enter...'); mode = 'pause_main'; return
+      }
+
+      if (mode === 'select_course') {
+        const n = Number(v)
+        if (n === 0) { showMain(); return }
+        if (!Number.isInteger(n) || n < 1 || n > state.courses.length) {
+          print('Invalid number. Try again:'); return
+        }
+        courseIdx = n - 1
+        showCourseMenu()
+        return
+      }
+
+      if (mode === 'delete_course') {
+        const n = Number(v)
+        if (n === 0) { showMain(); return }
+        if (!Number.isInteger(n) || n < 1 || n > state.courses.length) {
+          print('Invalid number. Try again:'); return
+        }
+        draft = { idx: n - 1 }
+        print(`Delete "${state.courses[draft.idx].name}"? (y/n)`); mode = 'confirm_delete_course'; return
+      }
+
+      if (mode === 'confirm_delete_course') {
+        if (v.toLowerCase() === 'y') {
+          const name = state.courses[draft.idx].name
+          state.courses.splice(draft.idx, 1)
+          dirty = true
+          print(`Deleted ${name}.`)
+        } else print('Cancelled.')
+        print('Press Enter...'); mode = 'pause_main'; return
+      }
+
+      if (mode === 'course_menu') {
+        const c = state.courses[courseIdx]
+        if (v === '0') { showMain(); return }
+        if (v === '1') {
+          print('')
+          if (!c.grades.length) print('No grades to display.')
+          else c.grades.forEach((g, i) => print(`${i + 1}. ${g.name}: ${g.earned}/${g.possible} (${pct(g).toFixed(2)}%) [Weight: ${g.weight}]`))
+          print(''); print('Press Enter...'); mode = 'pause_course'; return
+        }
+        if (v === '2') { print('Enter assignment name:'); mode = 'add_grade_name'; return }
+        if (v === '3') {
+          if (!c.grades.length) { print('No grades to delete.'); print('Press Enter...'); mode = 'pause_course'; return }
+          c.grades.forEach((g, i) => print(`${i + 1}. ${g.name}`))
+          print('Enter grade number to delete (0 to cancel):'); mode = 'delete_grade'; return
+        }
+        if (v === '4') {
+          const avg = courseAvg(c)
+          print(''); print('Course Summary'); print('--------------')
+          print(`Course Average: ${avg.toFixed(2)}%`)
+          print(`Letter Grade: ${letter(avg)}`)
+          print(`GPA Points: ${gpaPts(avg).toFixed(2)}`)
+          print(''); print('Press Enter...'); mode = 'pause_course'; return
+        }
+        print('Invalid option.'); print('Press Enter...'); mode = 'pause_course'
+        return
+      }
+
+      if (mode === 'add_grade_name') {
+        if (!v) { print('Name cannot be empty. Enter assignment name:'); return }
+        draft = { name: v }
+        print('Enter score earned:'); mode = 'add_grade_earned'; return
+      }
+      if (mode === 'add_grade_earned') {
+        const earned = Number(v)
+        if (Number.isNaN(earned) || earned < 0) { print('Enter a non-negative number:'); return }
+        draft.earned = earned
+        print('Enter score possible:'); mode = 'add_grade_possible'; return
+      }
+      if (mode === 'add_grade_possible') {
+        const possible = Number(v)
+        if (Number.isNaN(possible) || possible <= 0) { print('Enter a positive number:'); return }
+        draft.possible = possible
+        print('Custom weight? (y/n, default 1.0):'); mode = 'add_grade_weight_ask'; return
+      }
+      if (mode === 'add_grade_weight_ask') {
+        if (v.toLowerCase() === 'y') { print('Enter weight:'); mode = 'add_grade_weight'; return }
+        draft.weight = 1
+        finishAddGrade()
+        return
+      }
+      if (mode === 'add_grade_weight') {
+        const weight = Number(v)
+        if (Number.isNaN(weight) || weight < 0) { print('Enter a non-negative number:'); return }
+        draft.weight = weight
+        finishAddGrade()
+        return
+      }
+
+      if (mode === 'delete_grade') {
+        const n = Number(v)
+        if (n === 0) { showCourseMenu(); return }
+        const c = state.courses[courseIdx]
+        if (!Number.isInteger(n) || n < 1 || n > c.grades.length) {
+          print('Invalid number. Try again:'); return
+        }
+        const removed = c.grades.splice(n - 1, 1)[0]
+        dirty = true
+        print(`Deleted ${removed.name}.`)
+        print('Press Enter...'); mode = 'pause_course'
+      }
+    }
+
+    function finishAddGrade() {
+      state.courses[courseIdx].grades.push({
+        name: draft.name,
+        earned: draft.earned,
+        possible: draft.possible,
+        weight: draft.weight
+      })
+      dirty = true
+      const p = (draft.earned / draft.possible) * 100
+      print(`Grade added: ${draft.name} ${draft.earned}/${draft.possible} (${p.toFixed(2)}%)`)
+      print('Press Enter...'); mode = 'pause_course'
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      if (mode === 'done') return
+      const v = input.value
+      input.value = ''
+      handle(v)
+      input.focus()
+    })
+
+    showMain()
+    input.focus()
+  </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Build outputs
+merit
+merit.exe
+*.o
+*.obj
+
+# Runtime data
+merit_data.txt
+*.csv
+*.backup.*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
