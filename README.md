@@ -29,6 +29,8 @@ Published via GitHub Pages (`main` → `/docs`):
 
 https://lamokodieh-ops.github.io/projects/
 
+`docs/.nojekyll` is required so GitHub Pages does not strip Next.js `_next` asset folders.
+
 ### Republishing interactive demos
 
 | Demo | Command |

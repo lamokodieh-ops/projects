@@ -41,10 +41,9 @@ if (existsSync(indexHtml)) {
   copyFileSync(indexHtml, join(dest, '404.html'))
 }
 
-writeFileSync(
-  join(dest, '.nojekyll'),
-  '',
-)
+writeFileSync(join(dest, '.nojekyll'), '')
+// GitHub Pages site root is docs/ — Jekyll strips _next unless this exists there.
+writeFileSync(join(root, '..', 'docs', '.nojekyll'), '')
 
 console.log(`Published gallery demo → ${dest}`)
 console.log('Live URL: https://lamokodieh-ops.github.io/projects/cortex/')
