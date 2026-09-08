@@ -39,6 +39,7 @@
     </form>
     
     <form method="POST" action="{{ url_for('scrape_huds') }}" class="refresh-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit" class="btn btn-secondary">🔄 Refresh Menu</button>
     </form>
 </div>
@@ -104,6 +105,7 @@
     <h3>No menu items found</h3>
     <p>Try refreshing the menu or adjusting your filters.</p>
     <form method="POST" action="{{ url_for('scrape_huds') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <button type="submit" class="btn btn-primary">Load Sample Menu</button>
     </form>
 </div>

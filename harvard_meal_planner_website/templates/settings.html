@@ -11,6 +11,7 @@
     <div class="settings-section">
         <h3>Notification Preferences</h3>
         <form method="POST" action="{{ url_for('settings') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <div class="form-group checkbox-group">
                 <label class="checkbox-label">
                     <input type="checkbox" name="notifications_enabled" 
@@ -35,6 +36,7 @@
             <li class="favorite-huds-item">
                 <span>{{ item['item_name'] }}</span>
                 <form method="POST" action="{{ url_for('toggle_huds_favorite', item_name=item['item_name']) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                     <button type="submit" class="btn btn-sm btn-delete">Remove</button>
                 </form>
             </li>

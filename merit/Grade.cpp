@@ -12,6 +12,12 @@
 #include <sstream>
 #include <stdexcept>
 
+namespace {
+bool containsSaveDelimiter(const std::string& text) {
+    return text.find('|') != std::string::npos;
+}
+}
+
 // ============================================================================
 // CONSTRUCTORS & DESTRUCTOR
 // ============================================================================
@@ -32,10 +38,11 @@ Grade::Grade()
  * Sets weight to default value of 1.0
  */
 Grade::Grade(const std::string& name, double earned, double possible)
-    : assignmentName(name),
+    : assignmentName(""),
       scoreEarned(earned),
       scorePossible(possible),
       weight(1.0) {
+    setAssignmentName(name);
     // Validate inputs - ensure non-negative values
     if (scoreEarned < 0) scoreEarned = 0;
     if (scorePossible <= 0) scorePossible = 1; // Prevent division by zero
@@ -46,10 +53,11 @@ Grade::Grade(const std::string& name, double earned, double possible)
  * Allows specification of custom weight
  */
 Grade::Grade(const std::string& name, double earned, double possible, double w)
-    : assignmentName(name),
+    : assignmentName(""),
       scoreEarned(earned),
       scorePossible(possible),
       weight(w) {
+    setAssignmentName(name);
     // Validate inputs
     if (scoreEarned < 0) scoreEarned = 0;
     if (scorePossible <= 0) scorePossible = 1;
@@ -87,8 +95,12 @@ double Grade::getWeight() const {
 // SETTERS
 // ============================================================================
 
-void Grade::setAssignmentName(const std::string& name) {
+bool Grade::setAssignmentName(const std::string& name) {
+    if (name.empty() || containsSaveDelimiter(name)) {
+        return false;
+    }
     assignmentName = name;
+    return true;
 }
 
 /**

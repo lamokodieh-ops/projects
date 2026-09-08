@@ -13,21 +13,38 @@ from flask_jwt_extended import (
 
 from models import Investment, PortfolioSnapshot, Transaction, User, db, utcnow
 from quotes import CRYPTO_SYMBOLS, lookup, lookup_live
+from security import (
+    DEFAULT_CORS_ORIGINS,
+    DEV_JWT_DEFAULT,
+    DEV_SECRET_DEFAULT,
+    cors_origins,
+    is_production_env,
+    resolve_secret,
+)
 
 load_dotenv()
 
 
 def create_app():
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-change-me-fortis-32b")
-    app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "dev-jwt-change-me-fortis-32bytes")
+    app.config["SECRET_KEY"] = resolve_secret(os.environ, name="SECRET_KEY", default=DEV_SECRET_DEFAULT)
+    app.config["JWT_SECRET_KEY"] = resolve_secret(os.environ, name="JWT_SECRET_KEY", default=DEV_JWT_DEFAULT)
     app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///wealth.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=7)
 
     db.init_app(app)
     JWTManager(app)
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": cors_origins(os.environ, DEFAULT_CORS_ORIGINS),
+                "allow_headers": ["Content-Type", "Accept", "Authorization"],
+                "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+            }
+        },
+    )
 
     with app.app_context():
         db.create_all()
@@ -38,6 +55,8 @@ def create_app():
 
 
 def _ensure_demo_user():
+    if is_production_env(os.environ) and os.getenv("SEED_DEMO") != "1":
+        return
     if User.query.filter_by(email="demo@fortis.app").first():
         return
     from seed import seed_demo_user
@@ -422,12 +441,17 @@ def register_routes(app: Flask):
         tx = Transaction.query.filter_by(id=tx_id, user_id=user.id).first()
         if not tx:
             return jsonify({"error": "Transaction not found."}), 404
+        if tx.kind == "income":
+            user.cash_balance -= tx.amount
+        elif tx.kind == "expense":
+            user.cash_balance += tx.amount
         db.session.delete(tx)
         db.session.commit()
-        return jsonify({"ok": True})
+        record_snapshot(user, force=True)
+        return jsonify({"ok": True, "cash_balance": round(user.cash_balance, 2)})
 
 
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5001, debug=True)
+    app.run(host="127.0.0.1", port=5001, debug=os.getenv("FLASK_DEBUG") == "1")

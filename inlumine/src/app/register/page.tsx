@@ -21,6 +21,7 @@ export default function RegisterPage() {
     enrollmentYear: new Date().getFullYear(),
   });
   const [error, setError] = useState("");
+  const [errorTick, setErrorTick] = useState(0);
   const [loading, setLoading] = useState(false);
 
   function update(field: string, value: string | number) {
@@ -32,21 +33,27 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
 
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    const data = await res.json();
-    setLoading(false);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || "Registration failed.");
+        setErrorTick((n) => n + 1);
+        return;
+      }
 
-    if (!res.ok) {
-      setError(data.error || "Registration failed.");
-      return;
+      router.push("/login?registered=1");
+    } catch {
+      setError("Registration failed.");
+      setErrorTick((n) => n + 1);
+    } finally {
+      setLoading(false);
     }
-
-    router.push("/login?registered=1");
   }
 
   return (
@@ -57,17 +64,34 @@ export default function RegisterPage() {
           <PageTitle>Register</PageTitle>
           <p className="text-sm text-muted mb-10">Create your InLumine account.</p>
           <form onSubmit={handleSubmit} className="space-y-8">
-            <Input label="Full name" value={form.fullName} onChange={(e) => update("fullName", e.target.value)} required />
-            <Input label="Email" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required />
+            <Input
+              label="Full name"
+              name="fullName"
+              autoComplete="name"
+              value={form.fullName}
+              onChange={(e) => update("fullName", e.target.value)}
+              required
+            />
+            <Input
+              label="Email"
+              type="email"
+              name="email"
+              autoComplete="email"
+              value={form.email}
+              onChange={(e) => update("email", e.target.value)}
+              required
+            />
             <Input
               label="Password"
               type="password"
+              name="password"
+              autoComplete="new-password"
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
               minLength={8}
               required
             />
-            <Select label="Account type" value={form.role} onChange={(e) => update("role", e.target.value)}>
+            <Select label="Account type" name="role" value={form.role} onChange={(e) => update("role", e.target.value)}>
               <option value="COLLEGE_MATE">Alumni</option>
               <option value="STUDENT">Current student</option>
             </Select>
@@ -76,13 +100,19 @@ export default function RegisterPage() {
                 <Input
                   label="Graduation year"
                   type="number"
+                  name="graduationYear"
                   min={1950}
                   max={new Date().getFullYear()}
                   value={form.graduationYear}
-                  onChange={(e) => update("graduationYear", parseInt(e.target.value))}
+                  onChange={(e) => update("graduationYear", parseInt(e.target.value, 10))}
                   required
                 />
-                <Select label="Department" value={form.department} onChange={(e) => update("department", e.target.value)}>
+                <Select
+                  label="Department"
+                  name="department"
+                  value={form.department}
+                  onChange={(e) => update("department", e.target.value)}
+                >
                   {DEPARTMENTS.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
@@ -90,7 +120,12 @@ export default function RegisterPage() {
               </>
             ) : (
               <>
-                <Select label="Department" value={form.department} onChange={(e) => update("department", e.target.value)}>
+                <Select
+                  label="Department"
+                  name="department"
+                  value={form.department}
+                  onChange={(e) => update("department", e.target.value)}
+                >
                   {DEPARTMENTS.map((d) => (
                     <option key={d} value={d}>{d}</option>
                   ))}
@@ -98,16 +133,21 @@ export default function RegisterPage() {
                 <Input
                   label="Enrollment year"
                   type="number"
+                  name="enrollmentYear"
                   min={2000}
                   max={new Date().getFullYear()}
                   value={form.enrollmentYear}
-                  onChange={(e) => update("enrollmentYear", parseInt(e.target.value))}
+                  onChange={(e) => update("enrollmentYear", parseInt(e.target.value, 10))}
                   required
                 />
               </>
             )}
-            {error && <p className="text-xs text-red">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full">
+            {error && (
+              <p key={errorTick} id="register-error" role="alert" className="text-xs text-red">
+                {error}
+              </p>
+            )}
+            <Button type="submit" disabled={loading} aria-busy={loading} className="w-full">
               {loading ? "Creating…" : "Create account"}
             </Button>
           </form>

@@ -32,18 +32,19 @@ Course::Course()
  * Constructor with course name
  */
 Course::Course(const std::string& name) 
-    : courseName(name), 
+    : courseName(""), 
       creditHours(3) {
-    // Default 3 credit hours
+    setCourseName(name);
 }
 
 /**
  * Constructor with course name and credit hours
  */
 Course::Course(const std::string& name, int credits) 
-    : courseName(name), 
+    : courseName(""), 
       creditHours(credits) {
     if (creditHours < 1) creditHours = 1;  // Minimum 1 credit
+    setCourseName(name);
 }
 
 /**
@@ -92,8 +93,8 @@ const std::vector<Grade>& Course::getAllGrades() const {
 // ============================================================================
 
 bool Course::setCourseName(const std::string& name) {
-    if (name.empty()) {
-        return false;  // Name cannot be empty
+    if (name.empty() || name.find('|') != std::string::npos) {
+        return false;  // Empty names and '|' break the save format
     }
     courseName = name;
     return true;
@@ -116,10 +117,16 @@ void Course::addGrade(const Grade& grade) {
 }
 
 void Course::addGrade(const std::string& name, double earned, double possible) {
+    if (name.empty() || name.find('|') != std::string::npos) {
+        return;
+    }
     grades.emplace_back(name, earned, possible);
 }
 
 void Course::addGrade(const std::string& name, double earned, double possible, double weight) {
+    if (name.empty() || name.find('|') != std::string::npos) {
+        return;
+    }
     grades.emplace_back(name, earned, possible, weight);
 }
 

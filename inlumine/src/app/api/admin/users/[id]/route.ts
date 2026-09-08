@@ -1,14 +1,26 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requirePermission } from "@/lib/api-auth";
 import { createAuditLog, createNotification } from "@/lib/utils";
+
+const schema = z.object({
+  status: z.enum(["ACTIVE", "SUSPENDED"]).optional(),
+  verifyAlumni: z.boolean().optional(),
+  role: z.enum(["SUPER_ADMIN", "SYSTEM_USER", "COLLEGE_MATE", "STUDENT"]).optional(),
+});
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { error, user } = await requirePermission("manageUsers");
   if (error || !user) return error!;
 
   const { id } = await params;
-  const body = await req.json();
+  let body: z.infer<typeof schema>;
+  try {
+    body = schema.parse(await req.json());
+  } catch {
+    return NextResponse.json({ error: "Invalid input." }, { status: 400 });
+  }
 
   if (body.status) {
     await prisma.user.update({

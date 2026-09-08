@@ -99,8 +99,9 @@ public:
     /**
      * @brief Set the assignment name
      * @param name New assignment name
+     * @return true if valid (non-empty, no '|'), false otherwise
      */
-    void setAssignmentName(const std::string& name);
+    bool setAssignmentName(const std::string& name);
     
     /**
      * @brief Set the score earned

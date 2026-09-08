@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include <time.h>
 
 //Binary file for storing credentials
 #define credentials_file "credentials.bin"
 //Binary file for storing event data
 #define event_file "events.bin"
+#define EVENT_FILE_MAGIC "KRS1"
 
 // Structure for various events
 typedef struct event{
@@ -19,6 +21,8 @@ typedef struct event{
     char name[20];//name of the event
     struct event* next;
 }event;
+
+#define EVENT_RECORD_SIZE offsetof(event, next)
 
 //Structure for storage of credentials
 typedef struct credentials{
@@ -50,6 +54,25 @@ int load_credentials(credentials* cred){
     fclose(file);
     return 1;
 }
+
+static int write_event_record(FILE* file, const event* item) {
+    return fwrite(item, EVENT_RECORD_SIZE, 1, file) == 1;
+}
+
+static int read_event_record(FILE* file, event* item) {
+    if (fread(item, EVENT_RECORD_SIZE, 1, file) != 1) {
+        return 0;
+    }
+    item->next = NULL;
+    return 1;
+}
+
+void clear_input_buffer(void){
+    int c;
+    while((c = getchar()) != '\n' && c != EOF){
+    }
+}
+
 //Function for checking if credentials are correct and creating if there is none
 int authenticate(){
     credentials cred;
@@ -57,11 +80,17 @@ int authenticate(){
     if(load_credentials(&cred)== 0){
         printf("\nSet up a new account\n");
         printf("Enter a username: \n");
-        scanf("%s",cred.username);
-        getchar();//getchar() is used after scanf to clear the new line character in the buffer to prevent errors when fgets is used
+        if(scanf("%19s",cred.username) != 1){
+            printf("Invalid username.\n");
+            return 0;
+        }
+        clear_input_buffer();
         printf("Enter a password: \n");
-        scanf("%s",cred.password);
-        getchar();
+        if(scanf("%19s",cred.password) != 1){
+            printf("Invalid password.\n");
+            return 0;
+        }
+        clear_input_buffer();
         save_credentials(&cred);
         printf("Account created.\nRestart program to log in.\n");
         return 0;
@@ -70,11 +99,17 @@ int authenticate(){
     char username[20];
     char password[20];
     printf("Username: ");
-    scanf("%s",username);
-    getchar();
+    if(scanf("%19s",username) != 1){
+        printf("Invalid username.\n");
+        return 0;
+    }
+    clear_input_buffer();
     printf("Password: ");
-    scanf("%s", password);
-    getchar();
+    if(scanf("%19s", password) != 1){
+        printf("Invalid password.\n");
+        return 0;
+    }
+    clear_input_buffer();
 
     //comparing username and password for authentication
     if(strcmp(username,cred.username) == 0 && strcmp(password,cred.password) == 0){
@@ -94,17 +129,27 @@ void load_database(event** head){
         return;
     }
 
-    event temp;
-    while(fread(&temp,sizeof(event),1,file)){
-    event* new_event= (event*)malloc(sizeof(event));
-    if(new_event == NULL){
-        printf("Memory allocation error");
-        return;
+    char magic[4];
+    size_t magic_read = fread(magic, 1, 4, file);
+    int modern = (magic_read == 4 && memcmp(magic, EVENT_FILE_MAGIC, 4) == 0);
+    if(!modern){
+        rewind(file);
     }
-    *new_event=temp;
-    new_event->next = *head;
-    *head = new_event;
-}
+
+    event temp;
+    memset(&temp, 0, sizeof(temp));
+    while(modern ? read_event_record(file, &temp) : fread(&temp, sizeof(event), 1, file) == 1){
+        event* new_event= (event*)malloc(sizeof(event));
+        if(new_event == NULL){
+            printf("Memory allocation error");
+            fclose(file);
+            return;
+        }
+        *new_event=temp;
+        new_event->next = *head;
+        *head = new_event;
+        memset(&temp, 0, sizeof(temp));
+    }
     fclose(file);
 }
 
@@ -115,10 +160,19 @@ void save_database(event* head){
         printf("\nError....\nCould not save database\n");
         return;
     }
+    if(fwrite(EVENT_FILE_MAGIC, 1, 4, file) != 4){
+        printf("\nError....\nCould not save database\n");
+        fclose(file);
+        return;
+    }
     event* current = head;
     while(current){
-    fwrite(current,sizeof(event),1,file);
-    current = current->next;
+        if(!write_event_record(file, current)){
+            printf("\nError....\nCould not save database\n");
+            fclose(file);
+            return;
+        }
+        current = current->next;
     }
     fclose(file);
 }
@@ -343,8 +397,12 @@ int main(){
     do{
         printf("\n\nKairos — Personal Event Tracker\n1. Add event\n2. Edit event\n3. Delete event\n4. Display events by category\n5. Display events by date\n6. Display recent and upcoming events\n0. Save and Exit\n");
         printf("Enter command: ");
-        scanf("%d", &choice);
-        getchar();//getchar() is used after scanf to clear the new line character in the buffer to prevent errors when fgets is used
+        if(scanf("%d", &choice) != 1){
+            clear_input_buffer();
+            choice = -1;
+        } else {
+            clear_input_buffer();
+        }
 
         switch(choice){
         case 1:

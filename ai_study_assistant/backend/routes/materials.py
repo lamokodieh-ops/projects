@@ -5,7 +5,7 @@ from pathlib import Path
 
 from flask import Blueprint, jsonify, request
 
-from config import UPLOAD_DIR, ensure_dirs
+from config import MAX_UPLOAD_BYTES, UPLOAD_DIR, ensure_dirs, upload_too_large
 from db import create_material, get_material, list_generations, list_materials
 from llm_client import llm
 from rag.ingest import chunk_text, extract_text_from_pdf, normalize_text
@@ -47,6 +47,8 @@ def api_create_material():
         if file and file.filename:
             filename = Path(file.filename).name
             raw = file.read()
+            if upload_too_large(len(raw)):
+                return jsonify({"error": f"File too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)}MB)."}), 413
             suffix = Path(filename).suffix.lower()
             if suffix == ".pdf":
                 source_type = "pdf"

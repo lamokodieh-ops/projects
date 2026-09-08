@@ -105,6 +105,19 @@ std::string getStringInput(const std::string& prompt) {
 }
 
 /**
+ * @brief Get a name that can be stored without breaking the '|' save format
+ */
+std::string getNameInput(const std::string& prompt) {
+    while (true) {
+        std::string value = getStringInput(prompt);
+        if (value.find('|') == std::string::npos) {
+            return value;
+        }
+        std::cout << "  Names cannot contain '|'. Please try again.\n";
+    }
+}
+
+/**
  * @brief Get a yes/no confirmation from the user
  * @param prompt Message to display
  * @return true for yes, false for no
@@ -202,7 +215,7 @@ void addCourse(GradeManager& manager) {
     std::cout << "\n  === ADD NEW COURSE ===\n\n";
     
     // Get course name
-    std::string courseName = getStringInput("  Enter course name: ");
+    std::string courseName = getNameInput("  Enter course name: ");
     
     // Check for duplicate
     if (manager.courseExists(courseName)) {
@@ -308,7 +321,7 @@ void addGrade(Course& course) {
     std::cout << "-------------\n\n";
     
     // Get assignment name
-    std::string assignmentName = getStringInput("  Enter assignment name: ");
+    std::string assignmentName = getNameInput("  Enter assignment name: ");
     
     // Get score earned
     double scoreEarned = getDoubleInput("  Enter score earned: ", -1, true);
@@ -465,10 +478,13 @@ void editCourseDetails(Course& course, GradeManager& manager) {
     std::getline(std::cin, newName);
     
     if (!newName.empty() && newName != course.getCourseName()) {
-        if (manager.courseExists(newName)) {
+        if (newName.find('|') != std::string::npos) {
+            std::cout << "  Error: Names cannot contain '|'.\n";
+        } else if (manager.courseExists(newName)) {
             std::cout << "  Error: A course with this name already exists!\n";
+        } else if (!course.setCourseName(newName)) {
+            std::cout << "  Error: Invalid course name.\n";
         } else {
-            course.setCourseName(newName);
             std::cout << "  ✓ Course name updated.\n";
         }
     }

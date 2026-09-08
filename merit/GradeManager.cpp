@@ -71,8 +71,8 @@ bool GradeManager::addCourse(const Course& course) {
 
 bool GradeManager::addCourse(const std::string& courseName, int creditHours) {
     // Validate input
-    if (courseName.empty()) {
-        return false;  // Empty name not allowed
+    if (courseName.empty() || courseName.find('|') != std::string::npos) {
+        return false;  // Empty name and '|' break the save format
     }
     
     // Check for duplicate

@@ -7,6 +7,7 @@
     <div class="form-card">
         <h2>Edit Meal</h2>
         <form method="POST" action="{{ url_for('edit_meal', meal_id=meal['id']) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <div class="form-group">
                 <label for="meal_type">Meal Type *</label>
                 <select id="meal_type" name="meal_type" required>

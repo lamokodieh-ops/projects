@@ -4,12 +4,26 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/api-auth";
 import { DEPARTMENTS } from "@/lib/utils";
 
+const schema = z.object({
+  fullName: z.string().min(2).max(100),
+  phone: z.string().max(40).optional().nullable(),
+  graduationYear: z.number().int().optional(),
+  enrollmentYear: z.number().int().optional(),
+  department: z.string(),
+  currentCompany: z.string().max(200).optional().nullable(),
+  jobTitle: z.string().max(200).optional().nullable(),
+  location: z.string().max(200).optional().nullable(),
+  bio: z.string().max(2000).optional().nullable(),
+  linkedinUrl: z.string().max(300).optional().nullable(),
+  visibility: z.enum(["PUBLIC", "ALUMNI_ONLY", "CONNECTIONS_ONLY", "PRIVATE"]).optional(),
+});
+
 export async function PATCH(req: Request) {
   const { error, user } = await requireAuth();
   if (error || !user) return error!;
 
   try {
-    const body = await req.json();
+    const body = schema.parse(await req.json());
 
     await prisma.user.update({
       where: { id: user.id },
@@ -25,6 +39,9 @@ export async function PATCH(req: Request) {
     });
 
     if (dbUser?.alumniProfile) {
+      if (!DEPARTMENTS.includes(body.department as (typeof DEPARTMENTS)[number])) {
+        return NextResponse.json({ error: "Invalid department." }, { status: 400 });
+      }
       await prisma.alumniProfile.update({
         where: { userId: user.id },
         data: {

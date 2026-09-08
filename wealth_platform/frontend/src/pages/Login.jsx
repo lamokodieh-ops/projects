@@ -6,8 +6,8 @@ export default function Login() {
   const { user, login, register } = useAuth()
   const [mode, setMode] = useState('login')
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('demo@fortis.app')
-  const [password, setPassword] = useState('Demo123!')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 

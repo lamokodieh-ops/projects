@@ -111,7 +111,7 @@ public:
     /**
      * @brief Set the course name
      * @param name New course name
-     * @return true if name is valid (non-empty), false otherwise
+     * @return true if name is valid (non-empty, no '|'), false otherwise
      */
     bool setCourseName(const std::string& name);
     

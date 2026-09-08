@@ -14,7 +14,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center font-medium tracking-wide transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+    "inline-flex items-center justify-center min-h-11 font-medium tracking-wide transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy";
   const sizes = {
     sm: "text-xs px-4 py-2",
     md: "text-[0.8125rem] px-6 py-2.5",
@@ -54,7 +54,7 @@ export function ButtonLink({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center justify-center font-medium text-[0.8125rem] tracking-wide px-6 py-2.5 transition-colors",
+        "inline-flex items-center justify-center min-h-11 font-medium text-[0.8125rem] tracking-wide px-6 py-2.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy",
         variants[variant],
         className
       )}

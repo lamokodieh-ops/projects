@@ -22,9 +22,7 @@ const BookAppointment = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
-    alert('Thank you for your appointment request. We will contact you soon to confirm your appointment.')
+    alert('This is a demo booking form — nothing was sent. Thank you for trying the flow.')
     // Reset form
     setFormData({
       name: '',

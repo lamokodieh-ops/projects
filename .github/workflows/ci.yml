@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: FeedMe tests
+        working-directory: harvard_meal_planner_website
+        run: python -m unittest discover -s . -p "test_*.py" -v
+      - name: Fortis secret tests
+        working-directory: wealth_platform/backend
+        run: python -m unittest discover -s . -p "test_*.py" -v
+      - name: Cortex config tests
+        working-directory: ai_study_assistant/backend
+        run: python -m unittest discover -s . -p "test_*.py" -v
+
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Kairos
+        run: make
+        working-directory: event_management_system
+      - name: Build Merit
+        run: make
+        working-directory: merit
+
+  inlumine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: inlumine/package-lock.json
+      - name: Install and test
+        working-directory: inlumine
+        run: |
+          npm ci
+          npm test

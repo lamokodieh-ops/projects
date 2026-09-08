@@ -11,9 +11,10 @@ import { PageTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("kwabena@example.com");
-  const [password, setPassword] = useState("Alumni123!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [errorTick, setErrorTick] = useState(0);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -21,19 +22,26 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    setLoading(false);
-    if (result?.error) {
-      setError("That email or password doesn't match. Try again.");
-      return;
+      if (result?.error) {
+        setError("That email or password doesn't match. Try again.");
+        setErrorTick((n) => n + 1);
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Sign in failed. Try again.");
+      setErrorTick((n) => n + 1);
+    } finally {
+      setLoading(false);
     }
-    router.push("/dashboard");
-    router.refresh();
   }
 
   return (
@@ -63,8 +71,12 @@ export default function LoginPage() {
               required
               autoComplete="current-password"
             />
-            {error && <p className="text-xs text-red">{error}</p>}
-            <Button type="submit" disabled={loading} className="w-full">
+            {error && (
+              <p key={errorTick} id="login-error" role="alert" className="text-xs text-red">
+                {error}
+              </p>
+            )}
+            <Button type="submit" disabled={loading} aria-busy={loading} className="w-full">
               {loading ? "Signing in…" : "Sign in"}
             </Button>
           </form>

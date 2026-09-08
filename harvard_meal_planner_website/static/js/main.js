@@ -20,13 +20,21 @@
 // =============================================================================
 
 const MealPlanner = {
+    csrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') || '' : '';
+    },
+
     /**
      * Make an AJAX POST request and return JSON
      */
     async post(url, data = null) {
         const options = {
             method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': this.csrfToken()
+            }
         };
         
         if (data) {
@@ -276,7 +284,10 @@ const MealActions = {
         
         const response = await fetch(`/rate_meal/${mealId}`, {
             method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': MealPlanner.csrfToken()
+            },
             body: formData
         });
         const data = await response.json();
@@ -657,4 +668,16 @@ document.addEventListener('DOMContentLoaded', () => {
     HudsMenu.init();
     Notifications.init();
     StarRatingInput.init();
+
+    document.addEventListener('submit', (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        if ((form.method || 'get').toUpperCase() !== 'POST') return;
+        if (form.querySelector('input[name="csrf_token"]')) return;
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'csrf_token';
+        input.value = MealPlanner.csrfToken();
+        form.appendChild(input);
+    });
 });

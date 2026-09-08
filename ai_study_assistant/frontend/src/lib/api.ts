@@ -3,9 +3,16 @@ import type { Generation, LlmStatus, Material } from "./types";
 
 // Hit Flask directly so SSE streaming is not buffered by the Next rewrite proxy.
 const BASE = process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:5002";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "dev-cortex-local-key";
+
+function withApiKey(init?: RequestInit): RequestInit {
+  const headers = new Headers(init?.headers);
+  headers.set("X-API-Key", API_KEY);
+  return { ...init, headers };
+}
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, init);
+  const res = await fetch(`${BASE}${path}`, withApiKey(init));
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     throw new Error((data as { error?: string }).error || `Request failed (${res.status})`);
@@ -98,12 +105,15 @@ export async function streamGenerate(
 ) {
   if (isDemo) return demoApi.streamGenerate(body, handlers, signal);
 
-  const res = await fetch(`${BASE}/api/generate`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify(body),
-    signal,
-  });
+  const res = await fetch(
+    `${BASE}/api/generate`,
+    withApiKey({
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify(body),
+      signal,
+    }),
+  );
   if (!res.ok || !res.body) {
     const err = await res.json().catch(() => ({}));
     throw new Error((err as { error?: string }).error || `Generate failed (${res.status})`);

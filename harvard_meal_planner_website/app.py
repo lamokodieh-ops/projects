@@ -29,8 +29,11 @@ import requests
 # HTML parsing library (for extracting menu items from HUDS website)
 from bs4 import BeautifulSoup
 
-# Validation by checking patterns
-import re
+import secrets
+
+from csrf import token_from_request, tokens_match, wants_json_response
+from security import DEV_SECRET_DEFAULT, resolve_secret
+from validation import is_valid_email, is_valid_username, parse_rating, validate_password
 
 
 # APPLICATION CONFIGURATION
@@ -39,36 +42,38 @@ import re
 app = Flask(__name__)
 
 # Secret key for session encryption (set SECRET_KEY in production)
-app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
+app.secret_key = resolve_secret(os.environ, name="SECRET_KEY", default=DEV_SECRET_DEFAULT)
 
-# SQLite database file path
-DATABASE = 'meal_planner.db'
+# SQLite database file path (override with DATABASE for tests)
+DATABASE = os.environ.get("DATABASE", "meal_planner.db")
 
 
-# VALIDATION HELPER FUNCTIONS
+def ensure_csrf_token():
+    token = session.get("csrf_token")
+    if not token:
+        token = secrets.token_hex(32)
+        session["csrf_token"] = token
+    return token
 
-def is_valid_email(email):
-    # Check if email matches standard format (user@domain.tld)
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(pattern, email) is not None
 
-def is_valid_username(username):
-    # Validate: 3-20 chars, alphanumeric + underscore, must start with letter
-    if len(username) < 3:
-        return False, "Username must be at least 3 characters long."
-    if len(username) > 20:
-        return False, "Username cannot be longer than 20 characters."
-    if not username[0].isalpha():
-        return False, "Username must start with a letter."
-    if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]*$', username):
-        return False, "Username can only contain letters, numbers, and underscores."
-    return True, None
+@app.context_processor
+def inject_csrf_token():
+    return {"csrf_token": ensure_csrf_token()}
 
-def validate_password(password):
-    # Check password meets minimum length requirement
-    if len(password) < 6:
-        return False, "Password must be at least 6 characters long."
-    return True, None
+
+@app.before_request
+def enforce_csrf():
+    if request.method not in ("POST", "PUT", "PATCH", "DELETE"):
+        return None
+    provided = token_from_request(request.form, request.headers)
+    if tokens_match(session.get("csrf_token"), provided):
+        return None
+    if wants_json_response(request.headers):
+        return jsonify({"error": "Invalid or missing CSRF token", "success": False}), 403
+    flash("Your session expired. Please try again.", "error")
+    return redirect(url_for("index"))
+
+
 
 # DATABASE HELPER FUNCTIONS
 
@@ -377,7 +382,7 @@ def add_meal():
         meal_date = request.form.get('meal_date', '').strip()
         description = request.form.get('description', '').strip()
         is_favorite = 1 if request.form.get('is_favorite') else 0
-        rating = int(request.form.get('rating', 0))
+        rating = parse_rating(request.form.get('rating', 0))
         
         # Specific validation messages
         if not meal_type:
@@ -395,10 +400,6 @@ def add_meal():
         if not meal_date:
             flash('Please select a date for this meal.', 'error')
             return redirect(url_for('add_meal'))
-        
-        # Validate rating is within range
-        if rating < 0 or rating > 5:
-            rating = 0
         
         user_id = session['user_id']
         conn = get_db()
@@ -494,7 +495,7 @@ def edit_meal(meal_id):
         meal_date = request.form.get('meal_date', '').strip()
         description = request.form.get('description', '').strip()
         is_favorite = 1 if request.form.get('is_favorite') else 0
-        rating = int(request.form.get('rating', 0))
+        rating = parse_rating(request.form.get('rating', 0))
         feedback = request.form.get('feedback', '').strip()
         
         # Specific validation messages
@@ -517,10 +518,6 @@ def edit_meal(meal_id):
             flash('Please select a date for this meal.', 'error')
             conn.close()
             return redirect(url_for('edit_meal', meal_id=meal_id))
-        
-        # Validate rating is within range
-        if rating < 0 or rating > 5:
-            rating = 0
         
         cursor.execute('''
             UPDATE meals
@@ -591,10 +588,7 @@ def toggle_favorite(meal_id):
 def rate_meal(meal_id):
     # Rate a meal (0-5 stars)
     user_id = session['user_id']
-    rating = int(request.form.get('rating', 0))
-    
-    if rating < 0 or rating > 5:
-        rating = 0
+    rating = parse_rating(request.form.get('rating', 0))
     
     conn = get_db()
     cursor = conn.cursor()

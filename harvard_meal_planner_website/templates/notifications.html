@@ -11,6 +11,7 @@
             <span id="selectAllText">Select All</span>
         </button>
         <form method="POST" action="{{ url_for('clear_notifications') }}" class="clear-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <button type="submit" class="btn btn-secondary btn-sm">Clear All</button>
         </form>
     </div>
