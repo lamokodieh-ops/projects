@@ -8,7 +8,7 @@ Portfolio of software projects by [lamokodieh-ops](https://github.com/lamokodieh
 |---------|------|-------------|--------------------|
 | [MindCare — Mental Health Services](./mindcare) | React + Vite + Tailwind | `npm install && npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/mindcare/) |
 | [Fortis — Wealth Platform](./wealth_platform) | React + Flask + SQL | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/fortis/) (browser mock) |
-| [InLumine](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | [Demo notes](https://lamokodieh-ops.github.io/projects/inlumine/) (full app needs Vercel + DB) |
+| [InLumine — Alumni platform](./inlumine) | Next.js alumni platform | `npm install && npm run db:setup && npm run dev` | [Demo notes](https://lamokodieh-ops.github.io/projects/inlumine/) (full app needs Vercel + DB) |
 | [FeedMe — Harvard Meal Planner](./harvard_meal_planner_website) | Flask + SQLite | `pip install -r requirements.txt && python app.py` | [Video demo page](https://lamokodieh-ops.github.io/projects/feedme/) |
 | [Cortex — AI Study Assistant](./ai_study_assistant) | Next.js + Flask + RAG | Backend `python app.py` · Frontend `npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/cortex/) (browser mock) |
 | [Quirkly — Personality-aware Habits](./quirkly) | React + Vite + Router | `npm install && npm run dev` | [Live demo](https://lamokodieh-ops.github.io/projects/quirkly/) (seeded demo) |
