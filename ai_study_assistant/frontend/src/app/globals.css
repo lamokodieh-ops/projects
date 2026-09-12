@@ -50,13 +50,16 @@ body.cortex-lamp-off {
 }
 
 .desk-lamp {
-  position: absolute;
-  top: 0.1rem;
-  right: -0.35rem;
-  width: 168px;
-  height: 214px;
-  z-index: 20;
+  position: relative;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 168px;
+  height: auto;
+  aspect-ratio: 180 / 230;
+  z-index: 5;
   pointer-events: none;
+  justify-self: end;
 }
 
 .desk-lamp__beam {
@@ -155,10 +158,7 @@ body.cortex-lamp-off {
 
 @media (max-width: 840px) {
   .desk-lamp {
-    width: 112px;
-    height: 142px;
-    right: -0.6rem;
-    top: -0.2rem;
+    max-width: 108px;
   }
 }
 
@@ -185,11 +185,25 @@ h3 {
 }
 
 .desk {
-  max-width: 1080px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 1.75rem 1.35rem 4.5rem;
   position: relative;
   overflow-x: clip;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(6.25rem, 16vw, 10.75rem);
+  column-gap: 0.35rem;
+  align-items: start;
+}
+
+.desk > .desk-lamp {
+  grid-column: 2;
+  grid-row: 1 / span 12;
+}
+
+.desk > :not(.desk-lamp) {
+  grid-column: 1;
+  min-width: 0;
 }
 
 .mast {
@@ -200,12 +214,6 @@ h3 {
   padding-bottom: 1.15rem;
   margin-bottom: 2rem;
   border-bottom: 1px solid var(--line);
-}
-
-@media (min-width: 900px) {
-  .mast {
-    padding-right: 6.5rem;
-  }
 }
 
 .mark {
@@ -237,6 +245,26 @@ h3 {
   display: inline-block;
 }
 
+.workspace-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.workspace-head > div {
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.workspace-head h1 {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  color: var(--paper);
+  overflow-wrap: anywhere;
+}
+
 .lamp-badge {
   display: inline-flex;
   align-items: center;
@@ -246,6 +274,9 @@ h3 {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
+  text-align: right;
+  max-width: none;
+  line-height: 1.35;
 }
 
 .lamp-dot {
@@ -292,13 +323,13 @@ h3 {
 
 .grid {
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: 1.5rem;
   align-items: start;
   perspective: 1400px;
 }
 
-@media (max-width: 840px) {
+@media (max-width: 960px) {
   .grid {
     grid-template-columns: 1fr;
   }
@@ -395,8 +426,24 @@ h3 {
 }
 
 .field input[type="file"] {
-  font-size: 0.88rem;
-  padding-top: 0.4rem;
+  font-size: 0.82rem;
+  padding: 0.35rem 0 0.5rem;
+  color: #5c4e3e;
+}
+
+.field input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  border: 1px solid #c9b89a;
+  background: #fffaf0;
+  color: var(--ink);
+  border-radius: 2px;
+  min-height: 36px;
+  padding: 0.3rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .btn {
@@ -585,26 +632,13 @@ h3 {
   color: #7a6b56;
 }
 
-.workspace-head {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.75rem;
-}
-
-.workspace-head h1 {
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
-  color: var(--paper);
-}
-
 .quiz-step {
   will-change: opacity, transform;
 }
 
 .opening {
-  margin-top: 4rem;
+  margin: 0;
+  padding: 2rem 0 4rem;
 }
 
 .output-box {

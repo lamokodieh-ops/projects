@@ -78,6 +78,12 @@ export default function MaterialWorkspacePage() {
     return (
       <DeskScene>
         <DeskLamp />
+        <header className="mast">
+          <Link href="/" className="mark">
+            <span className="mark-kicker">Study desk</span>
+            <span className="mark-name">Cortex</span>
+          </Link>
+        </header>
         <p className="opening muted">Opening the desk…</p>
       </DeskScene>
     );
@@ -133,7 +139,7 @@ export default function MaterialWorkspacePage() {
                 id="q"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder="What should this explanation emphasize?"
+                placeholder="Optional focus"
               />
             </div>
           )}

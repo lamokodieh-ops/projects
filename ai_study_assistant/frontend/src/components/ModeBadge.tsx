@@ -28,7 +28,7 @@ export default function ModeBadge({ status }: { status?: LlmStatus | null }) {
   return (
     <span className={`lamp-badge ${live ? "on" : ""}`}>
       <span className="lamp-dot" ref={dotRef} aria-hidden />
-      {live ? "Lamp on · live" : "Lamp dim · mock"}
+      {live ? "Live" : "Mock"}
     </span>
   );
 }
