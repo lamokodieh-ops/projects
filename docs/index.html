@@ -3,191 +3,450 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Projects — lamokodieh-ops</title>
+  <title>Leonard Amo-Kodieh — Projects</title>
+  <meta name="description" content="Selected software by Leonard Amo-Kodieh, CS + Economics at Harvard. RAG tools, fintech dashboards, and other things built along the way." />
+  <meta property="og:title" content="Leonard Amo-Kodieh — Projects" />
+  <meta property="og:description" content="CS + Economics at Harvard. A gallery of software: RAG, LLM tooling, and fintech dashboards." />
+  <meta property="og:image" content="https://lamokodieh-ops.github.io/projects/previews/cortex.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0f1419;
-      --card: #1a222c;
-      --text: #e8eaed;
-      --muted: #9aa3ad;
-      --accent: #5b9fd4;
-      --line: rgba(255,255,255,0.08);
+      --bg: #12110e;
+      --bg-2: #1a1814;
+      --text: #f3eee4;
+      --muted: #b4aa9a;
+      --line: rgba(243, 238, 228, 0.1);
+      --card: #1c1a16;
+      --motion-fast: 180ms;
+      --motion-normal: 350ms;
+      --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --font-display: "Fraunces", Georgia, serif;
+      --font-body: "Source Sans 3", system-ui, sans-serif;
     }
     * { box-sizing: border-box; }
+    html, body { margin: 0; }
     body {
-      margin: 0;
-      font-family: "Segoe UI", system-ui, sans-serif;
-      background: radial-gradient(ellipse at top, #1a2836 0%, var(--bg) 55%);
-      color: var(--text);
       min-height: 100vh;
+      font-family: var(--font-body);
+      color: var(--text);
+      background:
+        radial-gradient(ellipse 70% 50% at 90% -10%, rgba(201, 152, 58, 0.16), transparent 50%),
+        radial-gradient(ellipse 50% 40% at 0% 100%, rgba(91, 159, 212, 0.08), transparent 46%),
+        linear-gradient(180deg, #1b1813 0%, var(--bg) 38%, #0e0d0b 100%);
       line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
     main {
-      max-width: 920px;
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 4rem 1.5rem 5rem;
+      padding: 3.25rem 1.4rem 5rem;
+    }
+    .profile {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.25rem 1.5rem;
+      align-items: start;
+      padding-bottom: 2.25rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      outline: 1px solid rgba(255,255,255,0.12);
+      outline-offset: -1px;
+      background: #d8d0c4;
+    }
+    .kicker {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #d4b36a;
+      font-weight: 600;
     }
     h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(1.85rem, 4vw, 2.55rem);
       font-weight: 600;
-      font-size: clamp(1.8rem, 4vw, 2.4rem);
-      letter-spacing: -0.02em;
-      margin: 0 0 0.5rem;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      text-wrap: balance;
     }
-    .lede { color: var(--muted); margin: 0 0 2.5rem; max-width: 36rem; }
-    .grid { display: grid; gap: 1rem; }
-    @media (min-width: 640px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .role {
+      margin: 0.45rem 0 0;
+      color: var(--muted);
+      font-size: 1.02rem;
+    }
+    .facts {
+      list-style: none;
+      margin: 0.8rem 0 0;
+      padding: 0;
+      display: grid;
+      gap: 0.4rem;
+      max-width: 42rem;
+      font-size: 0.94rem;
+      color: var(--muted);
+    }
+    .facts li {
+      display: grid;
+      grid-template-columns: 7.25rem minmax(0, 1fr);
+      gap: 0.55rem;
+      align-items: baseline;
+    }
+    .facts span {
+      color: #d4b36a;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .lede {
+      margin: 0.85rem 0 0;
+      max-width: 40rem;
+      color: var(--muted);
+      text-wrap: pretty;
+    }
+    @media (max-width: 520px) {
+      .facts li { grid-template-columns: 1fr; gap: 0.12rem; }
+    }
+    .social {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 1.1rem;
+    }
+    .social a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 0.95rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: border-color var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease);
+    }
+    .social a:hover {
+      border-color: #d4b36a;
+      background: rgba(212, 179, 106, 0.08);
+    }
+    .grid {
+      display: grid;
+      gap: 1.15rem;
+    }
+    @media (min-width: 760px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .profile { grid-template-columns: 88px 1fr; }
+      .avatar { width: 88px; height: 88px; }
+    }
     article {
+      --accent: #c9a15a;
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 1.35rem 1.4rem;
+      border-radius: 14px;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      animation: card-in var(--motion-normal) var(--motion-ease) both;
+      transition: transform var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
     }
-    article h2 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
+    article:nth-child(2) { animation-delay: 0.05s; }
+    article:nth-child(3) { animation-delay: 0.1s; }
+    article:nth-child(4) { animation-delay: 0.15s; }
+    article:nth-child(5) { animation-delay: 0.2s; }
+    article:nth-child(6) { animation-delay: 0.25s; }
+    article:nth-child(7) { animation-delay: 0.3s; }
+    article:nth-child(8) { animation-delay: 0.35s; }
+    article:hover {
+      transform: translateY(-4px);
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.28);
     }
-    .tag {
-      display: inline-block;
-      font-size: 0.7rem;
-      letter-spacing: 0.06em;
+    .shot {
+      display: block;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: #0b0b0a;
+      text-decoration: none;
+    }
+    .shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      transition: transform 0.5s var(--motion-ease);
+    }
+    article:hover .shot img { transform: scale(1.03); }
+    .body {
+      padding: 1.05rem 1.15rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      flex: 1;
+      border-top: 3px solid var(--accent);
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .chip {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid rgba(91,159,212,0.35);
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
       border-radius: 999px;
-      padding: 0.15rem 0.55rem;
-      width: fit-content;
-    }
-    p { margin: 0; color: var(--muted); font-size: 0.92rem; }
-    .links { margin-top: auto; display: flex; flex-wrap: wrap; gap: 0.75rem; padding-top: 0.5rem; }
-    a {
+      border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
       color: var(--accent);
+    }
+    .chip.kind {
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.22rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .body p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      text-wrap: pretty;
+    }
+    .links {
+      margin-top: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      padding-top: 0.55rem;
+    }
+    .links a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 0.9rem;
+      border-radius: 999px;
       text-decoration: none;
       font-size: 0.88rem;
-      font-weight: 500;
+      font-weight: 600;
     }
-    a:hover { text-decoration: underline; }
-    a.primary {
-      color: #0f1419;
+    .links a.primary {
       background: var(--accent);
-      padding: 0.2rem 0.55rem;
-      border-radius: 999px;
+      color: #14110c;
     }
-    a.primary:hover { text-decoration: none; filter: brightness(1.05); }
+    .links a.primary:hover { filter: brightness(1.06); }
+    .links a.ghost {
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+    .links a.ghost:hover { border-color: var(--accent); }
     footer {
-      margin-top: 3rem;
-      color: var(--muted);
-      font-size: 0.8rem;
+      margin-top: 2.75rem;
+      padding-top: 1.2rem;
       border-top: 1px solid var(--line);
-      padding-top: 1.25rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: #d4b36a; }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      article, .shot img { animation: none; transition: none; }
+      article:hover { transform: none; }
+      article:hover .shot img { transform: none; }
     }
   </style>
 </head>
 <body>
   <main>
-    <h1>Projects</h1>
-    <p class="lede">
-      Selected work from
-      <a href="https://github.com/lamokodieh-ops/projects">lamokodieh-ops/projects</a>.
-      Use <strong style="color:var(--text);font-weight:600">Open demo</strong> for no-setup previews.
-    </p>
+    <header class="profile">
+      <img class="avatar" src="./previews/avatar.jpg" width="88" height="88" alt="GitHub avatar for Leonard Amo-Kodieh" />
+      <div>
+        <p class="kicker">Selected work</p>
+        <h1>Leonard Amo-Kodieh</h1>
+        <p class="role">CS + Economics @ Harvard University · Cambridge, MA</p>
+        <ul class="facts">
+          <li><span>Education</span> BA, Computer Science and Economics · Harvard · 2025–2029</li>
+          <li><span>Bok Center</span> Learning Lab Undergraduate Fellow, Derek Bok Center</li>
+        </ul>
+        <p class="lede">
+          I like building things. Lately that’s meant RAG pipelines, LLM tooling, and a few fintech dashboards along the way. Always curious.
+        </p>
+        <nav class="social" aria-label="Profiles">
+          <a href="https://github.com/lamokodieh-ops">GitHub</a>
+          <a href="https://www.linkedin.com/in/leonardamokodieh">LinkedIn</a>
+          <a href="https://github.com/lamokodieh-ops/projects">Source repo</a>
+        </nav>
+      </div>
+    </header>
 
     <div class="grid">
-      <article>
-        <span class="tag">React · Vite · Tailwind</span>
-        <h2>MindCare — Mental Health Services</h2>
-        <p>Practice marketing site with service details, FAQ, contact, and appointment booking UI.</p>
-        <div class="links">
-          <a class="primary" href="./mindcare/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/mindcare">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/mindcare/README.md">Run / deploy</a>
+      <article style="--accent:#5a6573">
+        <a class="shot" href="/projects/mindcare/" aria-label="Open MindCare live demo">
+          <img src="./previews/mindcare.png" alt="MindCare homepage with therapy practice hero" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Live demo</span>
+            <span class="chip">React · Vite</span>
+          </div>
+          <h2>MindCare</h2>
+          <p>Practice site for mental-health services — booking, FAQ, and a calm clinical layout.</p>
+          <div class="links">
+            <a class="primary" href="/projects/mindcare/">Open MindCare demo</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/mindcare">Source</a>
+          </div>
         </div>
       </article>
 
       <article>
-        <span class="tag">React · Flask · SQL</span>
-        <h2>Fortis — Wealth Platform</h2>
-        <p>Personal finance app — investments, transactions, and real-time portfolio trends.</p>
-        <div class="links">
-          <a class="primary" href="./fortis/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/wealth_platform">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/wealth_platform/README.md">Run / deploy</a>
+        <a class="shot" href="/projects/fortis/" aria-label="Open Fortis browser mock">
+          <img src="./previews/fortis.png" alt="Fortis overview — live net worth, allocation, and holdings" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Browser mock</span>
+            <span class="chip">React · Flask</span>
+          </div>
+          <h2>Fortis</h2>
+          <p>Personal wealth dashboard — investments, cash flow, and live-looking portfolio trends.</p>
+          <div class="links">
+            <a class="primary" href="/projects/fortis/">Open Fortis mock</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/wealth_platform">Source</a>
+          </div>
         </div>
       </article>
 
-      <article>
-        <span class="tag">Next.js · Full stack</span>
-        <h2>InLumine — Alumni Platform</h2>
-        <p>PRESEC alumni platform — directory, networking, opportunities, and admin RBAC.</p>
-        <div class="links">
-          <a class="primary" href="./inlumine/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/inlumine">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/inlumine/README.md">Run / deploy</a>
+      <article style="--accent:#c9983a">
+        <a class="shot" href="/projects/inlumine/" aria-label="Read InLumine setup notes">
+          <img src="./previews/inlumine.png" alt="InLumine home dashboard with alumni stats and announcements" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Setup notes</span>
+            <span class="chip">Next.js · full stack</span>
+          </div>
+          <h2>InLumine</h2>
+          <p>PRESEC alumni network — directory, opportunities, and admin RBAC. Needs a real server, so Pages only hosts run notes.</p>
+          <div class="links">
+            <a class="primary" href="/projects/inlumine/">Read InLumine notes</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/inlumine">Source</a>
+          </div>
         </div>
       </article>
 
-      <article>
-        <span class="tag">Flask · SQLite</span>
-        <h2>FeedMe — Harvard Meal Planner</h2>
-        <p>Weekly meal planning with HUDS dining hall menu integration.</p>
-        <div class="links">
-          <a class="primary" href="./feedme/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/harvard_meal_planner_website">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/harvard_meal_planner_website/README.md">Run / deploy</a>
+      <article style="--accent:#A51C30">
+        <a class="shot" href="/projects/feedme/" aria-label="Watch FeedMe video demo">
+          <img src="./previews/feedme.png" alt="FeedMe weekly meal plan dashboard" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Video demo</span>
+            <span class="chip">Flask · SQLite</span>
+          </div>
+          <h2>FeedMe</h2>
+          <p>Harvard meal planner with HUDS dining-hall menus. The hosted preview is a recorded walkthrough.</p>
+          <div class="links">
+            <a class="primary" href="/projects/feedme/">Watch FeedMe demo</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/harvard_meal_planner_website">Source</a>
+          </div>
         </div>
       </article>
 
-      <article>
-        <span class="tag">Next.js · Flask · RAG</span>
-        <h2>Cortex — AI Study Assistant</h2>
-        <p>Explanations, quizzes, and summaries from course materials with retrieval grounding and streaming.</p>
-        <div class="links">
-          <a class="primary" href="./cortex/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/ai_study_assistant">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/ai_study_assistant/README.md">Run / deploy</a>
+      <article style="--accent:#e0b45c">
+        <a class="shot" href="/projects/cortex/" aria-label="Open Cortex study-desk mock">
+          <img src="./previews/cortex.png" alt="Cortex night-desk UI for grounded study help" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Browser mock</span>
+            <span class="chip">Next.js · RAG</span>
+          </div>
+          <h2>Cortex</h2>
+          <p>Study desk for your own notes — streaming explanations, quizzes, and source passages in the margin.</p>
+          <div class="links">
+            <a class="primary" href="/projects/cortex/">Open Cortex desk</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/ai_study_assistant">Source</a>
+          </div>
         </div>
       </article>
 
-      <article>
-        <span class="tag">React · Vite · Router</span>
-        <h2>Quirkly — Personality-aware Habits</h2>
-        <p>Quiz-tuned habit tracking with streaks, focus sessions, reschedule, and local persistence—seeded demo included.</p>
-        <div class="links">
-          <a class="primary" href="./quirkly/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/quirkly">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/quirkly/README.md">Run / deploy</a>
+      <article style="--accent:#ff6b4a">
+        <a class="shot" href="/projects/quirkly/" aria-label="Open Quirkly seeded demo">
+          <img src="./previews/quirkly.png" alt="Quirkly habit dashboard with today’s focus and insights" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Seeded demo</span>
+            <span class="chip">React · Vite</span>
+          </div>
+          <h2>Quirkly</h2>
+          <p>Personality-aware habits — streaks, focus sessions, and a quiz that tunes the day.</p>
+          <div class="links">
+            <a class="primary" href="/projects/quirkly/">Open Quirkly demo</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/quirkly">Source</a>
+          </div>
         </div>
       </article>
 
-      <article>
-        <span class="tag">C · CLI</span>
-        <h2>Kairos — Personal Event Tracker</h2>
-        <p>Terminal app for birthdays, anniversaries, and more with categories, filters, and file persistence.</p>
-        <div class="links">
-          <a class="primary" href="./event_manager/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/event_management_system">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/event_management_system/README.md">Build &amp; run</a>
+      <article style="--accent:#6fbf8f">
+        <a class="shot" href="/projects/event_manager/" aria-label="Open Kairos browser CLI demo">
+          <img src="./previews/kairos.png" alt="Kairos event tracker running as a browser CLI" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Browser CLI</span>
+            <span class="chip">C</span>
+          </div>
+          <h2>Kairos</h2>
+          <p>Terminal event tracker for birthdays and anniversaries, recreated in the browser.</p>
+          <div class="links">
+            <a class="primary" href="/projects/event_manager/">Open Kairos CLI demo</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/event_management_system">Source</a>
+          </div>
         </div>
       </article>
 
-      <article>
-        <span class="tag">C++ · CLI</span>
-        <h2>Merit — Course &amp; GPA Tracker</h2>
-        <p>OOP terminal app for courses, weighted grades, credit-weighted GPA, and CSV export.</p>
-        <div class="links">
-          <a class="primary" href="./merit/">Open demo</a>
-          <a href="https://github.com/lamokodieh-ops/projects/tree/main/merit">Source</a>
-          <a href="https://github.com/lamokodieh-ops/projects/blob/main/merit/README.md">Build &amp; run</a>
+      <article style="--accent:#8faecb">
+        <a class="shot" href="/projects/merit/" aria-label="Open Merit browser CLI demo">
+          <img src="./previews/merit.png" alt="Merit GPA tracker main menu in a browser CLI" />
+        </a>
+        <div class="body">
+          <div class="chips">
+            <span class="chip kind">Browser CLI</span>
+            <span class="chip">C++</span>
+          </div>
+          <h2>Merit</h2>
+          <p>Course and GPA tracker with weighted grades and CSV export, as an in-browser CLI.</p>
+          <div class="links">
+            <a class="primary" href="/projects/merit/">Open Merit CLI demo</a>
+            <a class="ghost" href="https://github.com/lamokodieh-ops/projects/tree/main/merit">Source</a>
+          </div>
         </div>
       </article>
     </div>
 
     <footer>
-      Clone the full repo:
-      <a href="https://github.com/lamokodieh-ops/projects">github.com/lamokodieh-ops/projects</a>
+      Public profiles:
+      <a href="https://github.com/lamokodieh-ops">github.com/lamokodieh-ops</a>
+      ·
+      <a href="https://www.linkedin.com/in/leonardamokodieh">linkedin.com/in/leonardamokodieh</a>
+      ·
+      <a href="https://bokcenter.harvard.edu/people/leonard-amo-kodieh">Bok Center profile</a>
     </footer>
   </main>
 </body>

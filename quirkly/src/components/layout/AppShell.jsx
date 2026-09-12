@@ -34,7 +34,7 @@ export function AppShell() {
           ))}
         </nav>
       </header>
-      <main id="main-content">
+      <main id="main-content" className="page-enter">
         <Outlet />
       </main>
     </div>

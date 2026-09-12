@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ModeBadge from "@/components/ModeBadge";
+import { StaggerItem, StaggerList } from "@/components/Motion";
 import QuizPanel from "@/components/QuizPanel";
 import { getMaterial, streamGenerate } from "@/lib/api";
 import type { Generation, LlmStatus, Material, SourceChunk, Task } from "@/lib/types";
@@ -73,17 +74,18 @@ export default function MaterialWorkspacePage() {
 
   if (!material && !error) {
     return (
-      <main className="shell">
-        <p className="muted">Loading…</p>
+      <main className="desk">
+        <p className="muted">Opening the desk…</p>
       </main>
     );
   }
 
   return (
-    <main className="shell">
-      <header className="topbar">
-        <Link href="/" className="brand">
-          Cortex <span>— AI Study Assistant</span>
+    <main className="desk">
+      <header className="mast">
+        <Link href="/" className="mark">
+          <span className="mark-kicker">Study desk</span>
+          <span className="mark-name">Cortex</span>
         </Link>
         <ModeBadge status={status} />
       </header>
@@ -91,7 +93,7 @@ export default function MaterialWorkspacePage() {
       <div className="workspace-head">
         <div>
           <h1>{material?.title || "Material"}</h1>
-          <p className="muted" style={{ margin: "0.35rem 0 0" }}>
+          <p className="muted" style={{ margin: "0.35rem 0 0", fontFamily: "var(--font-mono)", fontSize: "0.78rem" }}>
             {material?.chunk_count} chunks · {material?.source_type}
           </p>
         </div>
@@ -101,7 +103,7 @@ export default function MaterialWorkspacePage() {
       </div>
 
       <div className="grid">
-        <section className="panel">
+        <section className="paper">
           <h2>Generate</h2>
           <div className="modes">
             {(["explain", "quiz", "summary"] as Task[]).map((t) => (
@@ -139,7 +141,7 @@ export default function MaterialWorkspacePage() {
           )}
 
           {error && (
-            <p className="error" style={{ marginTop: "0.75rem" }}>
+            <p className="error" role="alert" style={{ marginTop: "0.75rem" }}>
               {error}
             </p>
           )}
@@ -151,9 +153,9 @@ export default function MaterialWorkspacePage() {
               onSources={(chunks) => setSources(chunks)}
             />
           ) : (
-            <div className="output-box" style={{ marginTop: "1.5rem" }}>
+            <div className="output-box">
               <h2>Output</h2>
-              <div className="stream">
+              <div className={`stream${busy ? " busy" : ""}`}>
                 {output || <span className="muted">Response appears here as it streams.</span>}
               </div>
             </div>
@@ -171,14 +173,6 @@ export default function MaterialWorkspacePage() {
                       key={g.id}
                       type="button"
                       className="card-link"
-                      style={{
-                        width: "100%",
-                        textAlign: "left",
-                        cursor: "pointer",
-                        border: "none",
-                        background: "transparent",
-                        padding: "0.9rem 0",
-                      }}
                       onClick={() => {
                         setOutput(g.output);
                         setSources(g.sources);
@@ -186,7 +180,7 @@ export default function MaterialWorkspacePage() {
                       }}
                     >
                       <strong style={{ textTransform: "capitalize" }}>{g.task}</strong>
-                      <div className="meta">{new Date(g.created_at).toLocaleString()}</div>
+                      <div className="meta">{g.created_at.slice(0, 16).replace("T", " ")}</div>
                     </button>
                   ))}
               </div>
@@ -194,27 +188,27 @@ export default function MaterialWorkspacePage() {
           )}
         </section>
 
-        <aside className="panel">
-          <div className="sources-box">
-            <h2>Sources</h2>
-            <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.88rem" }}>
-              Passages retrieved for this answer.
-            </p>
-            {sources.length === 0 ? (
-              <p className="muted">Generate or start a quiz to see grounding chunks.</p>
-            ) : (
-              <div className="sources">
-                {sources.map((s, i) => (
-                  <article key={`${s.id}-${i}`} className="source">
+        <aside className="margin">
+          <h2>Margin notes</h2>
+          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.88rem" }}>
+            Passages retrieved for this answer.
+          </p>
+          {sources.length === 0 ? (
+            <p className="muted">Generate or start a quiz to see grounding chunks.</p>
+          ) : (
+            <StaggerList className="sources">
+              {sources.map((s, i) => (
+                <StaggerItem key={`${s.id}-${i}`}>
+                  <article className="source">
                     <div className="score">
-                      S{i + 1} · {s.score}
+                      S{i + 1} · {Number(s.score).toFixed(2)}
                     </div>
                     {s.text}
                   </article>
-                ))}
-              </div>
-            )}
-          </div>
+                </StaggerItem>
+              ))}
+            </StaggerList>
+          )}
         </aside>
       </div>
     </main>

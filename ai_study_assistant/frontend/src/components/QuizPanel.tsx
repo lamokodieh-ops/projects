@@ -86,7 +86,7 @@ export default function QuizPanel({
   const finished = questions.length > 0 && index >= questions.length;
 
   return (
-    <div className="output-box" style={{ marginTop: "1.5rem" }}>
+    <div className="output-box">
       <h2>Quiz</h2>
       <p className="muted" style={{ margin: "0 0 1rem", fontSize: "0.9rem" }}>
         Short answers — submit each response to get graded.
@@ -130,7 +130,7 @@ export default function QuizPanel({
             </button>
           ) : (
             <div style={{ marginTop: "0.75rem" }}>
-              <p style={{ color: result.correct ? "var(--accent)" : "var(--danger)", fontWeight: 600 }}>
+              <p style={{ color: result.correct ? "#3d6b3a" : "var(--oxide)", fontWeight: 700 }}>
                 {result.correct ? "Correct" : "Not quite"} · {result.score}/100
               </p>
               <p style={{ lineHeight: 1.5 }}>{result.feedback}</p>

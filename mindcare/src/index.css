@@ -1,19 +1,79 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  --motion-fast: 180ms;
+  --motion-normal: 350ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
 
 @layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     @apply bg-white text-gray-900 antialiased;
+  }
+
+  h1 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-gray-900 hover:bg-gray-800 text-white font-normal py-3.5 px-8 rounded-sm transition-all duration-200 tracking-wide;
+    @apply bg-gray-900 hover:bg-gray-800 text-white font-normal py-3.5 px-8 rounded-sm tracking-wide;
+    transition-property: transform, background-color, box-shadow;
+    transition-duration: var(--motion-fast);
+    transition-timing-function: var(--motion-ease);
   }
-  
+
+  .btn-primary:active {
+    transform: scale(0.96);
+  }
+
   .btn-secondary {
-    @apply bg-transparent hover:bg-gray-50 text-gray-900 font-normal py-3.5 px-8 rounded-sm border border-gray-300 hover:border-gray-400 transition-all duration-200 tracking-wide;
+    @apply bg-transparent hover:bg-gray-50 text-gray-900 font-normal py-3.5 px-8 rounded-sm border border-gray-300 hover:border-gray-400 tracking-wide;
+    transition-property: transform, background-color, border-color;
+    transition-duration: var(--motion-fast);
+    transition-timing-function: var(--motion-ease);
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.96);
+  }
+
+  .page-enter {
+    animation: page-enter var(--motion-normal) var(--motion-ease) both;
   }
 }
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+  }
+
+  .btn-primary:active,
+  .btn-secondary:active {
+    transform: none;
+  }
+}
+

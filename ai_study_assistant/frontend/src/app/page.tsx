@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import ModeBadge from "@/components/ModeBadge";
+import { StaggerItem, StaggerList } from "@/components/Motion";
 import { createMaterial, getHealth, listMaterials } from "@/lib/api";
 import type { LlmStatus, Material } from "@/lib/types";
 
@@ -45,24 +46,25 @@ export default function HomePage() {
   }
 
   return (
-    <main className="shell">
-      <header className="topbar">
-        <div className="brand">
-          Cortex <span>— AI Study Assistant</span>
+    <main className="desk">
+      <header className="mast">
+        <div className="mark">
+          <span className="mark-kicker">Study desk</span>
+          <span className="mark-name">Cortex</span>
         </div>
         <ModeBadge status={status} />
       </header>
 
       <section className="hero">
-        <h1>Grounded study help from your own notes.</h1>
+        <h1>Read your notes under a lamp, not a chatbot window.</h1>
         <p>
-          Upload a reading or paste notes. Get explanations, quizzes, and summaries with the
-          source passages shown beside every answer.
+          Drop a reading on the desk. Explanations, quizzes, and summaries come back with the
+          passages they were pulled from sitting in the margin.
         </p>
       </section>
 
       <div className="grid">
-        <section className="panel">
+        <section className="paper">
           <h2>New material</h2>
           <form onSubmit={onSubmit}>
             <div className="field">
@@ -92,28 +94,37 @@ export default function HomePage() {
                 placeholder="Lecture notes, readings…"
               />
             </div>
-            {error && <p className="error">{error}</p>}
+            {error && (
+              <p className="error" role="alert">
+                {error}
+              </p>
+            )}
             <button className="btn btn-primary" type="submit" disabled={busy}>
-              {busy ? "Working…" : "Continue"}
+              {busy ? "Working…" : "Open on the desk"}
             </button>
           </form>
         </section>
 
-        <section className="panel">
+        <section className="margin">
           <h2>Library</h2>
+          <p className="muted" style={{ margin: "0 0 0.85rem", fontSize: "0.88rem" }}>
+            Index of materials on this desk.
+          </p>
           {materials.length === 0 ? (
             <p className="muted">Nothing here yet.</p>
           ) : (
-            <div className="list">
+            <StaggerList className="list">
               {materials.map((m) => (
-                <Link key={m.id} href={`/materials/${m.id}`} className="card-link">
-                  <strong>{m.title}</strong>
-                  <div className="meta">
-                    {m.chunk_count} chunks · {new Date(m.created_at).toLocaleDateString()}
-                  </div>
-                </Link>
+                <StaggerItem key={m.id}>
+                  <Link href={`/materials/${m.id}`} className="card-link">
+                    <strong>{m.title}</strong>
+                    <div className="meta">
+                      {m.chunk_count} chunks · {m.created_at.slice(0, 10)}
+                    </div>
+                  </Link>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerList>
           )}
         </section>
       </div>

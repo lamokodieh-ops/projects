@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Cortex — AI Study Assistant",
+  title: "Cortex — study desk",
   description: "Grounded explanations, quizzes, and summaries from your course materials.",
 };
 
