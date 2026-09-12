@@ -1,6 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { animate } from "animejs";
+import { canAnimate } from "@/lib/anime-desk";
 import { gradeQuizAnswer, startQuiz } from "@/lib/api";
 import type { SourceChunk } from "@/lib/types";
 
@@ -22,6 +24,7 @@ export default function QuizPanel({
   onSources: (sources: SourceChunk[]) => void;
   disabled?: boolean;
 }) {
+  const stepRef = useRef<HTMLDivElement>(null);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [questions, setQuestions] = useState<PublicQuestion[]>([]);
   const [index, setIndex] = useState(0);
@@ -33,6 +36,17 @@ export default function QuizPanel({
     correct: 0,
     total: 0,
   });
+
+  useEffect(() => {
+    const step = stepRef.current;
+    if (!step || !canAnimate()) return;
+    animate(step, {
+      opacity: [0, 1],
+      y: [14, 0],
+      duration: 520,
+      ease: "out(3)",
+    });
+  }, [index, result, sessionId, questions.length]);
 
   async function begin() {
     setBusy(true);
@@ -100,69 +114,71 @@ export default function QuizPanel({
 
       {error && <p className="error">{error}</p>}
 
-      {sessionId && current && !finished && (
-        <form onSubmit={onSubmit}>
-          <p className="muted" style={{ fontSize: "0.82rem", marginBottom: "0.5rem" }}>
-            Question {index + 1} of {questions.length}
-          </p>
-          <p style={{ lineHeight: 1.55, whiteSpace: "pre-wrap", margin: "0 0 1rem" }}>
-            {current.prompt}
-          </p>
-          {current.hint && !result && (
-            <p className="muted" style={{ fontSize: "0.85rem", marginTop: "-0.5rem" }}>
-              Hint: {current.hint}
+      <div className="quiz-step" ref={stepRef}>
+        {sessionId && current && !finished && (
+          <form onSubmit={onSubmit}>
+            <p className="muted" style={{ fontSize: "0.82rem", marginBottom: "0.5rem" }}>
+              Question {index + 1} of {questions.length}
             </p>
-          )}
-          <div className="field">
-            <label htmlFor="answer">Your answer</label>
-            <textarea
-              id="answer"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              disabled={!!result || busy}
-              placeholder="Type your answer…"
-            />
-          </div>
-
-          {!result ? (
-            <button className="btn btn-primary" type="submit" disabled={busy || !answer.trim()}>
-              {busy ? "Grading…" : "Submit answer"}
-            </button>
-          ) : (
-            <div style={{ marginTop: "0.75rem" }}>
-              <p style={{ color: result.correct ? "#3d6b3a" : "var(--oxide)", fontWeight: 700 }}>
-                {result.correct ? "Correct" : "Not quite"} · {result.score}/100
+            <p style={{ lineHeight: 1.55, whiteSpace: "pre-wrap", margin: "0 0 1rem" }}>
+              {current.prompt}
+            </p>
+            {current.hint && !result && (
+              <p className="muted" style={{ fontSize: "0.85rem", marginTop: "-0.5rem" }}>
+                Hint: {current.hint}
               </p>
-              <p style={{ lineHeight: 1.5 }}>{result.feedback}</p>
-              {!result.correct && (
-                <p className="muted" style={{ marginTop: "0.5rem" }}>
-                  Expected: {result.expected}
-                </p>
-              )}
-              <button
-                className="btn btn-primary"
-                type="button"
-                style={{ marginTop: "0.85rem" }}
-                onClick={next}
-              >
-                {index + 1 < questions.length ? "Next question" : "See results"}
-              </button>
+            )}
+            <div className="field">
+              <label htmlFor="answer">Your answer</label>
+              <textarea
+                id="answer"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                disabled={!!result || busy}
+                placeholder="Type your answer…"
+              />
             </div>
-          )}
-        </form>
-      )}
 
-      {finished && (
-        <div>
-          <p style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", margin: "0 0 0.5rem" }}>
-            Score: {scoreboard.correct}/{scoreboard.total}
-          </p>
-          <p className="muted">Quiz complete.</p>
-          <button className="btn btn-ghost" type="button" style={{ marginTop: "0.85rem" }} onClick={begin}>
-            Try again
-          </button>
-        </div>
-      )}
+            {!result ? (
+              <button className="btn btn-primary" type="submit" disabled={busy || !answer.trim()}>
+                {busy ? "Grading…" : "Submit answer"}
+              </button>
+            ) : (
+              <div>
+                <p style={{ color: result.correct ? "#3d6b3a" : "var(--oxide)", fontWeight: 700 }}>
+                  {result.correct ? "Correct" : "Not quite"} · {result.score}/100
+                </p>
+                <p style={{ lineHeight: 1.5 }}>{result.feedback}</p>
+                {!result.correct && (
+                  <p className="muted" style={{ marginTop: "0.5rem" }}>
+                    Expected: {result.expected}
+                  </p>
+                )}
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  style={{ marginTop: "0.85rem" }}
+                  onClick={next}
+                >
+                  {index + 1 < questions.length ? "Next question" : "See results"}
+                </button>
+              </div>
+            )}
+          </form>
+        )}
+
+        {finished && (
+          <div>
+            <p style={{ fontFamily: "var(--font-display)", fontSize: "1.25rem", margin: "0 0 0.5rem" }}>
+              Score: {scoreboard.correct}/{scoreboard.total}
+            </p>
+            <p className="muted">Quiz complete.</p>
+            <button className="btn btn-ghost" type="button" style={{ marginTop: "0.85rem" }} onClick={begin}>
+              Try again
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import DeskLamp from "@/components/DeskLamp";
+import DeskScene from "@/components/DeskScene";
 import ModeBadge from "@/components/ModeBadge";
 import { StaggerItem, StaggerList } from "@/components/Motion";
 import { createMaterial, getHealth, listMaterials } from "@/lib/api";
@@ -46,7 +48,8 @@ export default function HomePage() {
   }
 
   return (
-    <main className="desk">
+    <DeskScene>
+      <DeskLamp />
       <header className="mast">
         <div className="mark">
           <span className="mark-kicker">Study desk</span>
@@ -128,6 +131,6 @@ export default function HomePage() {
           )}
         </section>
       </div>
-    </main>
+    </DeskScene>
   );
 }

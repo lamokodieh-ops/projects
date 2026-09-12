@@ -1,17 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { motionConfig } from "@/lib/motion-config";
-import { springs } from "@/lib/motion-tokens";
-import { useSafeMotion } from "@/hooks/use-reduced-motion";
-
-const staggerContainer = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.07, delayChildren: 0.08 },
-  },
-};
+import { useEffect, useRef } from "react";
+import { animate, stagger } from "animejs";
+import { canAnimate } from "@/lib/anime-desk";
 
 export function StaggerList({
   children,
@@ -20,17 +11,27 @@ export function StaggerList({
   children: React.ReactNode;
   className?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const ref = useRef<HTMLDivElement>(null);
 
-  if (!motionConfig.shouldAnimate() || !mounted) {
-    return <div className={className}>{children}</div>;
-  }
+  useEffect(() => {
+    const root = ref.current;
+    if (!root || !canAnimate()) return;
+    const items = root.querySelectorAll(":scope > *");
+    if (!items.length) return;
+    animate(items, {
+      opacity: [0, 1],
+      y: [16, 0],
+      delay: stagger(75, { from: "first" }),
+      duration: 620,
+      ease: "out(3)",
+      composition: "blend",
+    });
+  }, [children]);
 
   return (
-    <motion.div className={className} variants={staggerContainer} initial="hidden" animate="visible">
+    <div ref={ref} className={className}>
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -41,21 +42,5 @@ export function StaggerItem({
   children: React.ReactNode;
   className?: string;
 }) {
-  const safe = useSafeMotion();
-
-  if (!motionConfig.shouldAnimate()) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      className={className}
-      variants={{
-        hidden: safe.initial,
-        visible: { ...safe.animate, transition: springs.gentle },
-      }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }

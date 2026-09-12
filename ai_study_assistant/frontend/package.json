@@ -10,6 +10,7 @@
     "build:gallery": "node ../scripts/publish-gallery.mjs"
   },
   "dependencies": {
+    "animejs": "^4.5.0",
     "motion": "^13.2.0",
     "next": "^15.1.0",
     "react": "^19.0.0",

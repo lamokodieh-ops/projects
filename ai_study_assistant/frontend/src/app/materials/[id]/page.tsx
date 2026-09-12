@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import DeskLamp from "@/components/DeskLamp";
+import DeskScene from "@/components/DeskScene";
 import ModeBadge from "@/components/ModeBadge";
 import { StaggerItem, StaggerList } from "@/components/Motion";
 import QuizPanel from "@/components/QuizPanel";
@@ -74,14 +76,16 @@ export default function MaterialWorkspacePage() {
 
   if (!material && !error) {
     return (
-      <main className="desk">
-        <p className="muted">Opening the desk…</p>
-      </main>
+      <DeskScene>
+        <DeskLamp />
+        <p className="opening muted">Opening the desk…</p>
+      </DeskScene>
     );
   }
 
   return (
-    <main className="desk">
+    <DeskScene>
+      <DeskLamp streaming={busy} />
       <header className="mast">
         <Link href="/" className="mark">
           <span className="mark-kicker">Study desk</span>
@@ -164,26 +168,27 @@ export default function MaterialWorkspacePage() {
           {history.length > 0 && task !== "quiz" && (
             <>
               <h2 style={{ marginTop: "1.75rem" }}>History</h2>
-              <div className="list">
+              <StaggerList className="list">
                 {history
                   .filter((g) => g.task !== "quiz")
                   .slice(0, 5)
                   .map((g) => (
-                    <button
-                      key={g.id}
-                      type="button"
-                      className="card-link"
-                      onClick={() => {
-                        setOutput(g.output);
-                        setSources(g.sources);
-                        setTask(g.task as Task);
-                      }}
-                    >
-                      <strong style={{ textTransform: "capitalize" }}>{g.task}</strong>
-                      <div className="meta">{g.created_at.slice(0, 16).replace("T", " ")}</div>
-                    </button>
+                    <StaggerItem key={g.id}>
+                      <button
+                        type="button"
+                        className="card-link"
+                        onClick={() => {
+                          setOutput(g.output);
+                          setSources(g.sources);
+                          setTask(g.task as Task);
+                        }}
+                      >
+                        <strong style={{ textTransform: "capitalize" }}>{g.task}</strong>
+                        <div className="meta">{g.created_at.slice(0, 16).replace("T", " ")}</div>
+                      </button>
+                    </StaggerItem>
                   ))}
-              </div>
+              </StaggerList>
             </>
           )}
         </section>
@@ -211,6 +216,6 @@ export default function MaterialWorkspacePage() {
           )}
         </aside>
       </div>
-    </main>
+    </DeskScene>
   );
 }
